@@ -80,3 +80,84 @@
 .language-selector.mat-focused ::ng-deep .mat-mdc-form-field-outline-thick {
   border-color: #2196f3;
 }
+
+/* Responsive Design for Language Switcher */
+@media (max-width: 768px) {
+  .lang-switcher {
+    top: 15px;
+    right: 15px;
+  }
+  
+  .language-toggle {
+    padding: 3px;
+    border-radius: 10px;
+  }
+  
+  .lang-btn {
+    padding: 6px 10px;
+    min-width: 50px;
+    gap: 4px;
+  }
+  
+  .language-flag,
+  .language-code {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lang-switcher {
+    top: 12px;
+    right: 12px;
+  }
+  
+  .language-toggle {
+    padding: 2px;
+    border-radius: 8px;
+  }
+  
+  .lang-btn {
+    padding: 4px 8px;
+    min-width: 40px;
+    gap: 2px;
+  }
+  
+  .language-flag,
+  .language-code {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .lang-switcher {
+    top: 8px;
+    right: 8px;
+  }
+  
+  .lang-btn {
+    padding: 3px 6px;
+    min-width: 35px;
+  }
+  
+  .language-flag,
+  .language-code {
+    font-size: 9px;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .lang-switcher {
+    top: 8px;
+    right: 8px;
+  }
+  
+  .language-toggle {
+    padding: 2px;
+  }
+  
+  .lang-btn {
+    padding: 3px 6px;
+    min-width: 35px;
+  }
+}

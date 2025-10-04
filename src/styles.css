@@ -44,3 +44,54 @@ app-root {
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+
+/* Global Responsive Design */
+@media (max-width: 768px) {
+  html, body, app-root {
+    background-attachment: scroll !important;
+  }
+  
+  body {
+    background-attachment: scroll;
+  }
+  
+  app-root {
+    background-attachment: scroll;
+  }
+}
+
+@media (max-width: 480px) {
+  html, body, app-root {
+    background-attachment: scroll !important;
+    background-size: cover !important;
+  }
+  
+  body {
+    background-attachment: scroll;
+    background-size: cover;
+  }
+  
+  app-root {
+    background-attachment: scroll;
+    background-size: cover;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+}
+
+@media (max-width: 360px) {
+  html, body, app-root {
+    background-size: cover !important;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  html, body, app-root {
+    background-attachment: scroll !important;
+    min-height: 100vh !important;
+  }
+  
+  app-root {
+    min-height: 100vh;
+  }
+}
