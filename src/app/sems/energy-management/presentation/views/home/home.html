@@ -2,31 +2,31 @@
   <!-- Stats Cards Row -->
   <div class="stats-row">
     <app-stats-card 
-      [title]="'dashboard.stats.energyConsumption' | translate" 
+      [title]="energyConsumptionLabel" 
       [value]="dashboardStats.energyConsumption + ' kWh'"
-      [subtitle]="'dashboard.stats.monthlySavingGoal' | translate">
+      [subtitle]="monthlySavingGoalLabel">
     </app-stats-card>
     
     <app-stats-card 
-      [title]="'dashboard.stats.estimatedSavings' | translate" 
+      [title]="estimatedSavingsLabel" 
       [value]="dashboardStats.estimatedSavings + '%'"
-      [subtitle]="'dashboard.stats.consumption' | translate">
+      [subtitle]="consumptionLabel">
     </app-stats-card>
     
     <app-stats-card 
-      [title]="'dashboard.stats.activeDevices' | translate" 
-      [value]="dashboardStats.activeDevices + ' ' + ('dashboard.stats.devices' | translate)"
+      [title]="activeDevicesLabel" 
+      [value]="dashboardStats.activeDevices + ' ' + devicesLabel"
       subtitle="">
     </app-stats-card>
     
     <app-stats-card 
-      [title]="'dashboard.stats.estimatedBill' | translate" 
+      [title]="estimatedBillLabel" 
       [value]="dashboardStats.currency + ' ' + dashboardStats.estimatedBill"
       subtitle="">
     </app-stats-card>
     
     <app-stats-card 
-      [title]="'dashboard.stats.todayConsumption' | translate" 
+      [title]="todayConsumptionLabel" 
       [value]="dashboardStats.todayConsumption + ' kWh'"
       subtitle="">
     </app-stats-card>
@@ -52,22 +52,22 @@
     <div class="alerts-section">
       <mat-card class="alerts-card">
         <mat-card-header>
-          <mat-card-title>{{ 'dashboard.alerts.title' | translate }}</mat-card-title>
+          <mat-card-title>{{ alertsTitleLabel }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="alert-item warning">
             <mat-icon>warning</mat-icon>
             <div class="alert-content">
-              <strong>{{ 'dashboard.alerts.highConsumption' | translate }}</strong>
-              <p>{{ 'dashboard.alerts.highConsumptionMessage' | translate }}</p>
+              <strong>{{ highConsumptionLabel }}</strong>
+              <p>{{ highConsumptionMessageLabel }}</p>
             </div>
           </div>
           
           <div class="alert-item info">
             <mat-icon>info</mat-icon>
             <div class="alert-content">
-              <strong>{{ 'dashboard.alerts.reminder' | translate }}</strong>
-              <p>{{ 'dashboard.alerts.reminderMessage' | translate }}</p>
+              <strong>{{ reminderLabel }}</strong>
+              <p>{{ reminderMessageLabel }}</p>
             </div>
           </div>
         </mat-card-content>

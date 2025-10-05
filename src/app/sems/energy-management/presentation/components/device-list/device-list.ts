@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Device } from '../../../domain/model/entities/device.entity';
 
 @Component({
@@ -11,8 +11,7 @@ import { Device } from '../../../domain/model/entities/device.entity';
   imports: [
     CommonModule,
     MatCardModule,
-    MatIconModule,
-    TranslateModule
+    MatIconModule
   ],
   templateUrl: './device-list.html',
   styleUrl: './device-list.css'
@@ -61,5 +60,13 @@ export class DeviceList {
 
   getTranslation(key: string): string {
     return this.translate.instant(key);
+  }
+
+  get devicesTitleLabel(): string {
+    return this.translate.instant('dashboard.devices.title');
+  }
+
+  get noDevicesLabel(): string {
+    return this.translate.instant('dashboard.devices.noDevices');
   }
 }

@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { DailyConsumption } from '../../../domain/model/entities/daily-consumption.entity';
 
 @Component({
@@ -9,8 +9,7 @@ import { DailyConsumption } from '../../../domain/model/entities/daily-consumpti
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    TranslateModule
+    MatCardModule
   ],
   templateUrl: './daily-chart.html',
   styleUrl: './daily-chart.css'
@@ -22,6 +21,8 @@ export class DailyChart implements OnChanges {
   maxValue: number = 10;
   linePoints: string = '';
   areaPoints: string = '';
+
+  constructor(private translate: TranslateService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['dailyConsumption'] && this.dailyConsumption) {
@@ -57,5 +58,9 @@ export class DailyChart implements OnChanges {
 
   formatTime(time: string): string {
     return time;
+  }
+
+  get dailyConsumptionLabel(): string {
+    return this.translate.instant('dashboard.charts.dailyConsumption');
   }
 }

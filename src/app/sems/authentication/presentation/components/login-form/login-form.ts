@@ -9,7 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateService } from '@ngx-translate/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 
 import { AuthControllerService, LoginCommand } from '../../../application/services/auth-controller.service';
@@ -26,8 +25,7 @@ import { AuthState } from '../../../application/services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
-    TranslateModule
+    MatProgressSpinnerModule
   ],
   templateUrl: './login-form.html',
   styleUrl: './login-form.css'
@@ -159,5 +157,30 @@ export class LoginForm implements OnInit, OnDestroy {
       const control = this.loginForm.get(key);
       control?.markAsTouched();
     });
+  }
+
+  // Translation helper methods
+  get usernameLabel(): string {
+    return this.translate.instant('auth.login.username');
+  }
+
+  get passwordLabel(): string {
+    return this.translate.instant('auth.login.password');
+  }
+
+  get usernamePlaceholder(): string {
+    return this.translate.instant('auth.login.usernamePlaceholder');
+  }
+
+  get passwordPlaceholder(): string {
+    return this.translate.instant('auth.login.passwordPlaceholder');
+  }
+
+  get loginButtonText(): string {
+    return this.translate.instant('auth.login.loginButton');
+  }
+
+  get loadingText(): string {
+    return this.translate.instant('auth.login.loading');
   }
 }

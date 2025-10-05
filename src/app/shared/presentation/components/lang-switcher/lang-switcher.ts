@@ -7,7 +7,6 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-lang-switcher',
   standalone: true,
   imports: [
-    CommonModule
   ],
   templateUrl: './lang-switcher.html',
   styleUrl: './lang-switcher.css'
