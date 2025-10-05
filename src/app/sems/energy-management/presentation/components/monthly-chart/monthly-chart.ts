@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { MonthlyComparison } from '../../../domain/model/entities/monthly-comparison.entity';
 
 @Component({
@@ -9,8 +9,7 @@ import { MonthlyComparison } from '../../../domain/model/entities/monthly-compar
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    TranslateModule
+    MatCardModule
   ],
   templateUrl: './monthly-chart.html',
   styleUrl: './monthly-chart.css'
@@ -46,5 +45,13 @@ export class MonthlyChart implements OnChanges {
 
   getTranslation(key: string): string {
     return this.translate.instant(key);
+  }
+
+  get monthlyComparisonLabel(): string {
+    return this.translate.instant('dashboard.charts.monthlyComparison');
+  }
+
+  get comparisonLabel(): string {
+    return this.translate.instant('dashboard.charts.comparison');
   }
 }

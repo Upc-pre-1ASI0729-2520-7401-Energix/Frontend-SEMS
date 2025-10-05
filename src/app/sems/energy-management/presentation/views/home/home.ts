@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subject, filter, takeUntil } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { StatsCard } from '../../components/stats-card/stats-card';
 import { DailyChart } from '../../components/daily-chart/daily-chart';
 import { CategoryChart } from '../../components/category-chart/category-chart';
@@ -19,7 +21,6 @@ import { DashboardService } from '../../../application/services/dashboard.servic
   selector: 'app-home',
   imports: [
     CommonModule,
-    TranslateModule,
     StatsCard,
     DailyChart,
     CategoryChart,
@@ -31,7 +32,7 @@ import { DashboardService } from '../../../application/services/dashboard.servic
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   // Data from API
   dashboardStats: DashboardStats = new DashboardStats(0, 0, 0, 0, 0, 'S/.');
 
@@ -42,18 +43,42 @@ export class Home implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     // Initialize translations first
     this.translate.setDefaultLang('es');
     this.translate.use('es');
-    
+
     // Debug: Check if translations are loaded
-    console.log('Translations loaded:', this.translate.instant('dashboard.stats.energyConsumption'));
-    
+    console.log('Home - ngOnInit. Translations loaded:', this.translate.instant('dashboard.stats.energyConsumption'));
+
     this.loadDashboardData();
+
+    // when navigation ends, if we returned to /home reload data
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe(evt => {
+      if (evt.urlAfterRedirects === '/home' || evt.url === '/home') {
+        console.log('Home - navigation end to /home, reloading dashboard data');
+        this.loadDashboardData();
+      }
+    });
+    // reload when navigating back to /home (in case router reuses components)
+    if ((this as any).router === undefined) {
+      // router may be injected via constructor in variants; try to get it from DI if available
+    }
+  }
+
+  // Ensure we reload data when returning to this route and clean up subscriptions
+  private readonly destroy$ = new Subject<void>();
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadDashboardData(): void {
@@ -111,5 +136,58 @@ export class Home implements OnInit {
 
   getTranslation(key: string): string {
     return this.translate.instant(key);
+  }
+
+  // Translation helper methods for template
+  get energyConsumptionLabel(): string {
+    return this.translate.instant('dashboard.stats.energyConsumption');
+  }
+
+  get monthlySavingGoalLabel(): string {
+    return this.translate.instant('dashboard.stats.monthlySavingGoal');
+  }
+
+  get estimatedSavingsLabel(): string {
+    return this.translate.instant('dashboard.stats.estimatedSavings');
+  }
+
+  get consumptionLabel(): string {
+    return this.translate.instant('dashboard.stats.consumption');
+  }
+
+  get activeDevicesLabel(): string {
+    return this.translate.instant('dashboard.stats.activeDevices');
+  }
+
+  get devicesLabel(): string {
+    return this.translate.instant('dashboard.stats.devices');
+  }
+
+  get estimatedBillLabel(): string {
+    return this.translate.instant('dashboard.stats.estimatedBill');
+  }
+
+  get todayConsumptionLabel(): string {
+    return this.translate.instant('dashboard.stats.todayConsumption');
+  }
+
+  get alertsTitleLabel(): string {
+    return this.translate.instant('dashboard.alerts.title');
+  }
+
+  get highConsumptionLabel(): string {
+    return this.translate.instant('dashboard.alerts.highConsumption');
+  }
+
+  get highConsumptionMessageLabel(): string {
+    return this.translate.instant('dashboard.alerts.highConsumptionMessage');
+  }
+
+  get reminderLabel(): string {
+    return this.translate.instant('dashboard.alerts.reminder');
+  }
+
+  get reminderMessageLabel(): string {
+    return this.translate.instant('dashboard.alerts.reminderMessage');
   }
 }

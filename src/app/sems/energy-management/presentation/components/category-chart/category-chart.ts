@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ConsumptionByCategory } from '../../../domain/model/entities/consumption-by-category.entity';
 
 @Component({
@@ -9,8 +9,7 @@ import { ConsumptionByCategory } from '../../../domain/model/entities/consumptio
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    TranslateModule
+    MatCardModule
   ],
   templateUrl: './category-chart.html',
   styleUrl: './category-chart.css'
@@ -33,5 +32,13 @@ export class CategoryChart implements OnChanges {
 
   getTranslation(key: string): string {
     return this.translate.instant(key);
+  }
+
+  get consumptionByCategoryLabel(): string {
+    return this.translate.instant('dashboard.charts.consumptionByCategory');
+  }
+
+  get byCategoryLabel(): string {
+    return this.translate.instant('dashboard.charts.byCategory');
   }
 }

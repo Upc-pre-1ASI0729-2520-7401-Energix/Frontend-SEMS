@@ -29,7 +29,7 @@ interface MenuItem {
 })
 export class Sidebar implements OnInit {
   menuItems: MenuItem[] = [
-    { labelKey: 'sidebar.home', icon: 'home', route: '/home', active: true },
+    { labelKey: 'sidebar.home', icon: 'home', route: '/home', active: false },
     { labelKey: 'sidebar.profile', icon: 'person', route: '/profile', active: false },
     { labelKey: 'sidebar.devices', icon: 'devices', route: '/devices', active: false },
     { labelKey: 'sidebar.reports', icon: 'assessment', route: '/reports', active: false },
@@ -43,23 +43,9 @@ export class Sidebar implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.updateActiveRoute();
+    // no-op: routerLinkActive handles active state
   }
-
-  updateActiveRoute(): void {
-    const currentRoute = this.router.url;
-    this.menuItems.forEach(item => {
-      item.active = currentRoute.includes(item.route);
-    });
-  }
-
-  onMenuItemClick(item: MenuItem): void {
-    this.menuItems.forEach(menuItem => {
-      menuItem.active = false;
-    });
-    item.active = true;
-    this.router.navigate([item.route]);
-  }
+  // navigation handled by routerLink in template
 
   onLogout(): void {
     this.authController.executeLogout().subscribe({

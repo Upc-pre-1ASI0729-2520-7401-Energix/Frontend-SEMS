@@ -10,11 +10,11 @@
         
         <!-- Username Field -->
         <div class="form-field">
-          <label class="field-label">{{ 'auth.login.username' | translate }}</label>
+          <label class="field-label">{{ usernameLabel }}</label>
           <input
             type="text"
             formControlName="username"
-            [placeholder]="'auth.login.usernamePlaceholder' | translate"
+            [placeholder]="usernamePlaceholder"
             autocomplete="username"
             class="custom-input"
             [class.error]="isFieldInvalid('username')">
@@ -25,12 +25,12 @@
 
         <!-- Password Field -->
         <div class="form-field">
-          <label class="field-label">{{ 'auth.login.password' | translate }}</label>
+          <label class="field-label">{{ passwordLabel }}</label>
           <div class="password-wrapper">
             <input
               [type]="hidePassword ? 'password' : 'text'"
               formControlName="password"
-              [placeholder]="'auth.login.passwordPlaceholder' | translate"
+              [placeholder]="passwordPlaceholder"
               autocomplete="current-password"
               class="custom-input password-input"
               [class.error]="isFieldInvalid('password')">
@@ -73,11 +73,11 @@
           </mat-spinner>
           
           <span *ngIf="!authState.isLoading">
-            {{ 'auth.login.loginButton' | translate }}
+            {{ loginButtonText }}
           </span>
           
           <span *ngIf="authState.isLoading">
-            {{ 'auth.login.loading' | translate }}
+            {{ loadingText }}
           </span>
         </button>
       </form>
