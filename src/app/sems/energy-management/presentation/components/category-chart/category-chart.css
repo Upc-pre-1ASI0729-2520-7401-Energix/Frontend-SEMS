@@ -3,6 +3,10 @@
   height: 100%;
 }
 
+mat-card {
+  background: white;
+}
+
 mat-card-header {
   padding: 1.5rem 1.5rem 0;
 }

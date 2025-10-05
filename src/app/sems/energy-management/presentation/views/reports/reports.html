@@ -1,1 +1,39 @@
-<p>reports works!</p>
+<div class="reports-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>My Reports</h1>
+    <p class="subtitle">Summary Insights</p>
+  </div>
+
+  <!-- Insight Cards Row -->
+  <div class="insight-cards-row">
+    <div class="insight-card" 
+         *ngFor="let card of insightCards" 
+         [ngClass]="'card-' + card.type"
+         [style.border-left-color]="card.color">
+      <div class="card-icon">{{ card.icon }}</div>
+      <div class="card-content">
+        <h3 class="card-title">{{ card.title }}</h3>
+        <p class="card-message">{{ card.message }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <!-- Device Ranking Chart -->
+    <div class="chart-container left-chart">
+      <app-device-chart></app-device-chart>
+    </div>
+
+    <!-- Weekly Consumption Chart -->
+    <div class="chart-container right-chart">
+      <app-weekly-chart></app-weekly-chart>
+    </div>
+  </div>
+
+  <!-- Export Section -->
+  <div class="export-section">
+    <app-export-card></app-export-card>
+  </div>
+</div>

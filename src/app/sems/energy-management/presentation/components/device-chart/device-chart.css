@@ -1,0 +1,160 @@
+.device-chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-header h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.chart-content {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 120px;
+  padding: 20px 0;
+}
+
+.device-label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  text-align: right;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 40px;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.grid-line {
+  position: absolute;
+  top: 20px;
+  bottom: 40px;
+  width: 1px;
+  background: #f0f0f0;
+  border-left: 1px solid #e0e0e0;
+}
+
+.bars-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 20px 0;
+  z-index: 2;
+  position: relative;
+}
+
+.bar-row {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.bar {
+  height: 24px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bar:hover {
+  transform: scaleY(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.x-axis {
+  height: 40px;
+  position: relative;
+  border-top: 1px solid #e0e0e0;
+  margin-top: auto;
+}
+
+.x-label {
+  position: absolute;
+  top: 8px;
+  font-size: 12px;
+  color: #666;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.chart-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.summary-text {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .device-chart-container {
+    padding: 16px;
+    height: 350px;
+  }
+  
+  .y-axis {
+    width: 100px;
+  }
+  
+  .device-label {
+    font-size: 12px;
+    height: 35px;
+  }
+  
+  .bar-row {
+    height: 35px;
+  }
+  
+  .bar {
+    height: 20px;
+  }
+  
+  .x-label {
+    font-size: 11px;
+  }
+  
+  .summary-text {
+    font-size: 13px;
+  }
+}

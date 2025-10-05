@@ -1,1 +1,49 @@
-<p>device-chart works!</p>
+<div class="device-chart-container">
+  <div class="chart-header">
+    <h3>Device Ranking</h3>
+  </div>
+  
+  <div class="chart-content">
+    <!-- Y-axis labels (device names) -->
+    <div class="y-axis">
+      <div class="device-label" *ngFor="let device of devices">
+        {{ device.name }}
+      </div>
+    </div>
+
+    <!-- Chart area -->
+    <div class="chart-area">
+      <!-- X-axis grid lines -->
+      <div class="grid-lines">
+        <div class="grid-line" *ngFor="let label of getXAxisLabels()" 
+             [style.left.%]="(label / 60) * 100">
+        </div>
+      </div>
+
+      <!-- Device bars -->
+      <div class="bars-container">
+        <div class="bar-row" *ngFor="let device of devices">
+          <div class="bar" 
+               [style.width.%]="getBarWidth(device.consumption)"
+               [style.background-color]="device.color"
+               [title]="device.name + ': ' + formatConsumption(device.consumption)">
+          </div>
+        </div>
+      </div>
+
+      <!-- X-axis labels -->
+      <div class="x-axis">
+        <span class="x-label" *ngFor="let label of getXAxisLabels()" 
+              [style.left.%]="(label / 60) * 100">
+          {{ label }} kWh
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-footer">
+    <p class="summary-text">
+      Your top 3 devices account for over {{ topThreePercentage }}% of your total energy consumption this month.
+    </p>
+  </div>
+</div>
