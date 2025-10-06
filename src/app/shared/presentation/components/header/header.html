@@ -8,22 +8,28 @@
   </div>
 
   <div class="header-right">
-    <button 
-      mat-icon-button 
+    <button
+      mat-icon-button
       class="notification-button"
-      (click)="onNotificationClick()"
+      (click)="toggleNotifications()"
       [matBadge]="notificationCount"
       matBadgeColor="warn"
       matBadgeSize="small">
       <mat-icon>notifications</mat-icon>
     </button>
 
+    <app-notifications *ngIf="showNotifications"></app-notifications>
+
     <div class="user-info">
       <span class="greeting">Hello,</span>
       <span class="username">{{ userName }}</span>
-      <img src="assets/user-avatar.png" alt="User Avatar" class="user-avatar" />
+      <img
+        src="assets/user-avatar.png"
+        alt="User Avatar"
+        class="user-avatar"
+      />
     </div>
-    
+
     <app-lang-switcher></app-lang-switcher>
   </div>
 </header>
