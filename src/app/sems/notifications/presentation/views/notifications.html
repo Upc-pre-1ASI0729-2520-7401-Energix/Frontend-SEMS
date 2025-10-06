@@ -1,0 +1,40 @@
+<div class="notification-container">
+
+  <div class="notification-icon" (click)="toggleNotifications()">
+    <i class="fa fa-bell"></i>
+    <span *ngIf="unreadCount > 0" class="notification-dot"></span>
+  </div>
+
+
+  <div class="notification-popup">
+    <div class="notification-header">
+      <span>Notificaciones</span>
+      <span class="count" *ngIf="unreadCount > 0">{{ unreadCount }} nuevas</span>
+    </div>
+
+    <div *ngIf="notifications.length === 0" class="empty">
+      No hay notificaciones
+    </div>
+
+    <ul *ngIf="notifications.length > 0">
+      <li
+        *ngFor="let notification of notifications"
+        [ngClass]="[notification.type, notification.read ? 'read' : '']"
+        (click)="markAsRead(notification)"
+      >
+        <div class="ntf-icon">
+          <i *ngIf="notification.type === 'success'" class="fa fa-check-circle"></i>
+          <i *ngIf="notification.type === 'warning'" class="fa fa-exclamation-triangle"></i>
+          <i *ngIf="notification.type === 'info'" class="fa fa-info-circle"></i>
+        </div>
+
+        <div class="ntf-content">
+          <div class="title">{{ notification.title }}</div>
+          <div class="message">{{ notification.message }}</div>
+          <div class="time">{{ notification.timestamp | date:'shortTime' }}</div>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+</div>
