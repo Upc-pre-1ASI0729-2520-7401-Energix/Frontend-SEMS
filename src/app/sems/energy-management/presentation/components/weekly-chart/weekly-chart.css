@@ -1,9 +1,9 @@
 .weekly-chart-container {
-  background: white;
-  border-radius: 12px;
+  background: transparent;
+  border-radius: 0;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  border: none;
   height: 400px;
   display: flex;
   flex-direction: column;
@@ -43,7 +43,7 @@
 
 .average-label {
   position: absolute;
-  right: 0;
+  left: 0;
   background: white;
   padding: 2px 8px;
   font-size: 12px;
@@ -75,20 +75,18 @@
 .bar {
   width: 100%;
   max-width: 40px;
-  background: linear-gradient(to top, #5B9BD5, #7BB3E8);
-  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #036AB0 0%, #FFFFFF 100%);
   transition: all 0.3s ease;
   cursor: pointer;
   min-height: 10px;
-  box-shadow: 0 2px 4px rgba(91, 155, 213, 0.3);
   position: absolute;
   bottom: 30px;
 }
 
 .bar:hover {
-  background: linear-gradient(to top, #4A8BC2, #6AA5D5);
+  background: linear-gradient(180deg, #98D4F0 0%, #5BA3E8 50%, #3E6BC4 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(91, 155, 213, 0.4);
+  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
 }
 
 .day-label {
@@ -126,20 +124,20 @@
     padding: 16px;
     height: 350px;
   }
-  
+
   .chart-bars {
     height: 160px;
     gap: 8px;
   }
-  
+
   .bar {
     max-width: 32px;
   }
-  
+
   .day-label {
     font-size: 11px;
   }
-  
+
   .average-label {
     font-size: 11px;
     padding: 1px 6px;

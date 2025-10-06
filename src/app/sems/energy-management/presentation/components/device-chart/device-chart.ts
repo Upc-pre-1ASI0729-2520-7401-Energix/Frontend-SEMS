@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface DeviceData {
-  name: string;
+  nameKey: string;
   consumption: number;
   color: string;
   percentage: number;
@@ -10,7 +11,7 @@ interface DeviceData {
 
 @Component({
   selector: 'app-device-chart',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './device-chart.html',
   styleUrl: './device-chart.css'
 })
@@ -19,6 +20,8 @@ export class DeviceChart implements OnInit {
   maxConsumption: number = 0;
   totalConsumption: number = 0;
   topThreePercentage: number = 55;
+
+  constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.initializeDeviceData();
@@ -29,19 +32,19 @@ export class DeviceChart implements OnInit {
     // Datos basados en la imagen del ranking de dispositivos
     this.devices = [
       { 
-        name: 'Air Conditioning', 
+        nameKey: 'reports.deviceChart.devices.airConditioning', 
         consumption: 55, 
         color: '#2C3E50',
         percentage: 0
       },
       { 
-        name: 'Refrigerator', 
+        nameKey: 'reports.deviceChart.devices.refrigerator', 
         consumption: 25, 
         color: '#3498DB',
         percentage: 0
       },
       { 
-        name: 'Desktop PC', 
+        nameKey: 'reports.deviceChart.devices.desktopPC', 
         consumption: 15, 
         color: '#5DADE2',
         percentage: 0

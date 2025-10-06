@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface WeeklyData {
   day: string;
@@ -9,7 +10,7 @@ interface WeeklyData {
 
 @Component({
   selector: 'app-weekly-chart',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './weekly-chart.html',
   styleUrl: './weekly-chart.css'
 })
@@ -17,7 +18,8 @@ export class WeeklyChart implements OnInit {
   weeklyData: WeeklyData[] = [];
   weeklyAverage: number = 0;
   maxConsumption: number = 0;
-  comparisonText: string = '';
+
+  constructor(private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.initializeWeeklyData();
@@ -41,7 +43,6 @@ export class WeeklyChart implements OnInit {
     const totalConsumption = this.weeklyData.reduce((sum, day) => sum + day.consumption, 0);
     this.weeklyAverage = totalConsumption / this.weeklyData.length;
     this.maxConsumption = Math.max(...this.weeklyData.map(day => day.consumption));
-    this.comparisonText = 'Your consumption this week is 5% lower than the last week.';
   }
 
   getBarHeight(consumption: number): number {

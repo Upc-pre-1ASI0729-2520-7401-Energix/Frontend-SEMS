@@ -49,6 +49,65 @@
       "reminderMessage": "You forgot to turn off the patio lights."
     }
   },
+  "reports": {
+    "title": "My Reports",
+    "subtitle": "Summary Insights",
+    "insights": {
+      "greatMonth": {
+        "title": "Great Month!",
+        "message": "You reduced your consumption by 12% last month, saving $/25."
+      },
+      "tip": {
+        "title": "Tip: Change out your lightbulbs!",
+        "message": "Switching to LED bulbs can save you about $/300 a year on your electricity bill."
+      }
+    },
+    "weeklyChart": {
+      "title": "Weekly Consumption Trend",
+      "weeklyAverage": "Weekly Average",
+      "comparison": "Your consumption this week is 5% lower than the last week.",
+      "encouragement": "Keep up the great work!",
+      "days": {
+        "MON": "MON",
+        "TUE": "TUE", 
+        "WED": "WED",
+        "THU": "THU",
+        "FRI": "FRI",
+        "SAT": "SAT",
+        "SUN": "SUN"
+      }
+    },
+    "deviceChart": {
+      "title": "Device Ranking",
+      "summary": "Your top 3 devices account for over 55% of your total energy consumption this month.",
+      "devices": {
+        "airConditioning": "Air Conditioning",
+        "refrigerator": "Refrigerator",
+        "desktopPC": "Desktop PC"
+      }
+    },
+    "export": {
+      "title": "Export Report",
+      "format": "Export Format:",
+      "periods": {
+        "allData": "All Data",
+        "lastMonth": "Last Month",
+        "lastWeek": "Last Week"
+      },
+      "emailPlaceholder": "Enter email address",
+      "buttons": {
+        "download": "Download",
+        "sendReport": "Send Report",
+        "downloading": "Downloading...",
+        "sending": "Sending..."
+      },
+      "alerts": {
+        "emailRequired": "Please enter a valid email address",
+        "downloadSuccess": "{{format}} report for {{period}} downloaded successfully!",
+        "sendSuccess": "{{format}} report for {{period}} sent to {{email}} successfully!"
+      }
+    }
+  },
   "sidebar": {
     "home": "Home",
     "profile": "Profile",

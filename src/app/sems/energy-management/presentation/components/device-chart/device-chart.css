@@ -1,9 +1,9 @@
 .device-chart-container {
-  background: white;
-  border-radius: 12px;
+  background: transparent;
+  border-radius: 0;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
+  box-shadow: none;
+  border: none;
   height: 400px;
   display: flex;
   flex-direction: column;

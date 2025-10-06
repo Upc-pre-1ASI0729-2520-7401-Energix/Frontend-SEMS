@@ -1,13 +1,13 @@
 <div class="device-chart-container">
   <div class="chart-header">
-    <h3>Device Ranking</h3>
+    <h3>{{ 'reports.deviceChart.title' | translate }}</h3>
   </div>
   
   <div class="chart-content">
     <!-- Y-axis labels (device names) -->
     <div class="y-axis">
       <div class="device-label" *ngFor="let device of devices">
-        {{ device.name }}
+        {{ device.nameKey | translate }}
       </div>
     </div>
 
@@ -26,7 +26,7 @@
           <div class="bar" 
                [style.width.%]="getBarWidth(device.consumption)"
                [style.background-color]="device.color"
-               [title]="device.name + ': ' + formatConsumption(device.consumption)">
+               [title]="(device.nameKey | translate) + ': ' + formatConsumption(device.consumption)">
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@
 
   <div class="chart-footer">
     <p class="summary-text">
-      Your top 3 devices account for over {{ topThreePercentage }}% of your total energy consumption this month.
+      {{ 'reports.deviceChart.summary' | translate }}
     </p>
   </div>
 </div>
