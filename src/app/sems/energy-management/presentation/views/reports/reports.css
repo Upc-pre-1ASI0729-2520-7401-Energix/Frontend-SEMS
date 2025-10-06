@@ -1,0 +1,197 @@
+.reports-container {
+  padding: 24px;
+  background: #f5f5f5;
+  width: 100%;
+  height: 0px;
+  box-sizing: border-box;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 400;
+}
+
+.insight-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.insight-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-success {
+  border-left-color: #4A90E2;
+}
+
+.card-tip {
+  border-left-color: #5B9BD5;
+}
+
+.card-icon {
+  font-size: 24px;
+  margin-top: 4px;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+}
+
+.card-message {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  height: 400px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e0e0e0;
+}
+
+.export-section {
+  display: flex;
+  justify-content: stretch;
+  margin-top: 24px;
+  width: 100%;
+  min-height: 300px;
+}
+
+.export-section app-export-card {
+  width: 100%;
+  display: flex;
+}
+
+/* Responsive Design */
+@media (min-width: 1400px) {
+  .reports-container {
+    padding: 32px 48px;
+  }
+
+  .charts-row {
+    gap: 32px;
+  }
+
+  .insight-cards-row {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .insight-cards-row {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 16px;
+  }
+
+  .insight-cards-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .charts-row {
+    gap: 16px;
+  }
+
+  .insight-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+  }
+
+  .card-message {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reports-container {
+    padding: 12px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .insight-card {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .card-icon {
+    font-size: 20px;
+  }
+}

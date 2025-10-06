@@ -1,0 +1,267 @@
+.export-card-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  height: 70%;
+  margin: 0 auto;
+}
+
+.card-header h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+}
+
+.export-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.format-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.format-dropdown {
+  padding: 8px 32px;
+  border: 2px solid #000000 !important;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s ease;
+  min-width: 80px;
+}
+
+.checkboxes-section {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.email-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.email-input {
+  width: 300px;
+  max-width: 300px;
+  padding: 10px 16px;
+  border: 2px solid #000000 !important;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.download-button {
+  padding: 10px 24px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.send-button {
+  padding: 10px 20px;
+  background: #5B9BD5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.send-button:hover:not(:disabled) {
+  background: #4A8BC2;
+  transform: translateY(-1px);
+}
+
+.send-button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.download-button:hover:not(:disabled) {
+  background: #34495e;
+  transform: translateY(-1px);
+}
+
+.download-button:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.checkbox-input {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #000000 !important;
+  border-radius: 3px;
+  display: inline-block;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  background: #2c3e50;
+  border-color: #2c3e50;
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.email-input:focus {
+  border-color: #000000 !important;
+}
+
+.email-input.invalid {
+  border-color: #e74c3c !important;
+}
+
+.format-dropdown:focus {
+  border-color: #000000 !important;
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .export-card-container {
+    padding: 16px;
+  }
+
+  .export-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .checkboxes-section {
+    justify-content: space-between;
+  }
+
+  .email-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .email-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .send-button,
+  .download-button {
+    width: 100%;
+  }
+}

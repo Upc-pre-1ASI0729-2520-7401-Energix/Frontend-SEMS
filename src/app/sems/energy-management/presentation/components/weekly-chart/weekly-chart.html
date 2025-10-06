@@ -1,0 +1,29 @@
+<div class="weekly-chart-container">
+  <div class="chart-header">
+    <h3>{{ 'reports.weeklyChart.title' | translate }}</h3>
+  </div>
+  
+  <div class="chart-content">
+    <!-- Average line indicator -->
+    <div class="average-line-container">
+      <div class="average-line" [style.bottom.%]="getAverageLinePosition()"></div>
+      <span class="average-label" [style.bottom.%]="getAverageLinePosition() + 2">{{ 'reports.weeklyChart.weeklyAverage' | translate }}</span>
+    </div>
+
+    <!-- Chart bars -->
+    <div class="chart-bars">
+      <div class="bar-container" *ngFor="let data of weeklyData">
+        <div class="bar" 
+             [style.height.%]="getBarHeight(data.consumption)"
+             [title]="data.label + ': ' + data.consumption + ' kWh'">
+        </div>
+        <span class="day-label">{{ ('reports.weeklyChart.days.' + data.day) | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-footer">
+    <p class="comparison-text">{{ 'reports.weeklyChart.comparison' | translate }}</p>
+    <p class="encouragement">{{ 'reports.weeklyChart.encouragement' | translate }}</p>
+  </div>
+</div>

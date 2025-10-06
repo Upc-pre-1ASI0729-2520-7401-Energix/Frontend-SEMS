@@ -73,6 +73,7 @@
 
 /* Alerts Card Styling */
 .alerts-card {
+  background: white;
   height: 100%;
 }
 
@@ -127,17 +128,17 @@
     flex-direction: column;
     height: auto;
   }
-  
+
   .chart-large,
   .chart-small {
     height: 300px;
     max-width: 100%;
   }
-  
+
   .bottom-row {
     flex-wrap: wrap;
   }
-  
+
   .chart-medium,
   .alerts-section,
   .devices-section {
@@ -149,21 +150,21 @@
   .dashboard-container {
     padding: 10px;
   }
-  
+
   .stats-row {
     flex-direction: column;
   }
-  
+
   .stats-row app-stats-card {
     max-width: 100%;
     min-width: unset;
   }
-  
+
   .bottom-row {
     flex-direction: column;
     height: auto;
   }
-  
+
   .chart-medium,
   .alerts-section,
   .devices-section {
