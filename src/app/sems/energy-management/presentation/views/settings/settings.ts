@@ -42,7 +42,9 @@ export class Settings {
   toggleFormat(fmt: string) {
     const idx = this.selectedFormats.indexOf(fmt);
     if (idx > -1) {
-      this.selectedFormats.slice(idx, 1);
+      this.selectedFormats.splice(idx, 1);
+    } else if (this.selectedFormats.length < 2) {
+      this.selectedFormats.push(fmt);
     }
   }
 }

@@ -1,3 +1,4 @@
+<!-- settings.html -->
 <div class="settings-content">
   <section class="settings-container">
     <h1>{{ t('settings.title') }}</h1>
@@ -30,43 +31,43 @@
         </p>
         <hr />
         <h3>{{ t('settings.reports.title') }}</h3>
-        <div class="frequency">
-          <!-- settings.html -->
+        <div class="chip-group">
           <button
             mat-button
-            [ngClass]="{'selected-black': selectedFrequencies.includes('Daily')}"
+            class="chip"
+            [ngClass]="{'selected': selectedFrequencies.includes('Daily')}"
             (click)="toggleFrequency('Daily')"
           >
             {{ t('settings.reports.daily') }}
           </button>
           <button
             mat-button
-            [ngClass]="{'selected-black': selectedFrequencies.includes('Weekly')}"
+            class="chip"
+            [ngClass]="{'selected': selectedFrequencies.includes('Weekly')}"
             (click)="toggleFrequency('Weekly')"
           >
             {{ t('settings.reports.weekly') }}
           </button>
           <button
             mat-button
-            [ngClass]="{'selected-black': selectedFrequencies.includes('Monthly')}"
+            class="chip"
+            [ngClass]="{'selected': selectedFrequencies.includes('Monthly')}"
             (click)="toggleFrequency('Monthly')"
           >
             {{ t('settings.reports.monthly') }}
           </button>
-
-        </div>
-
-        <div class="format">
           <button
             mat-button
-            [ngClass]="{'selected-Format':selectedFormat.includes(  'PDF' )}"
+            class="chip"
+            [ngClass]="{'selected': selectedFormats.includes('PDF')}"
             (click)="toggleFormat('PDF')"
           >
             {{ t('settings.reports.pdf') }}
           </button>
           <button
             mat-button
-            [ngClass]="{'selected-Format':selectedFormat.includes(  'CSV' )}"
+            class="chip"
+            [ngClass]="{'selected': selectedFormats.includes('CSV')}"
             (click)="toggleFormat('CSV')"
           >
             {{ t('settings.reports.csv') }}
@@ -104,3 +105,4 @@
     </div>
   </section>
 </div>
+
