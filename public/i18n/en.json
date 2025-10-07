@@ -39,7 +39,35 @@
     "devices": {
       "title": "My Devices",
       "myDevices": "My Devices",
-      "noDevices": "No devices found"
+      "noDevices": "No devices found",
+      "preferences": "Preferences",
+      "addDevice": "Add Device",
+      "realTimeStatus": "Real-time Status",
+      "lastActive": "Last Active",
+      "alertHistory": "Alert History",
+      "energyConsumption": "Energy Consumption",
+      "status": {
+        "on": "On",
+        "off": "Off",
+        "standby": "Standby",
+        "charging": "Charging"
+      },
+      "lastActiveTime": {
+        "now": "Now",
+        "minutesAgo": "{{minutes}} minutes ago",
+        "hourAgo": "1 hour ago",
+        "hoursAgo": "{{hours}} hours ago"
+      },
+      "alerts": {
+        "noAlerts": "No alerts",
+        "phantomLoad": "Phantom load alert"
+      },
+      "categories": {
+        "heating_cooling": "Heating & Cooling",
+        "major_appliances": "Major Appliances",
+        "electronics": "Electronics",
+        "other": "Other"
+      }
     },
     "alerts": {
       "title": "Alerts",
@@ -47,6 +75,24 @@
       "highConsumptionMessage": "Your usage is 20% above average in the last 3 hours.",
       "reminder": "Reminder:",
       "reminderMessage": "You forgot to turn off the patio lights."
+    },
+    "preferences": {
+      "title": "Device Monitoring Preferences",
+      "enableEnergyMonitoring": "Enable Energy Monitoring",
+      "receiveHighUsageAlerts": "Receive High Usage Alerts",
+      "monitorHeatingCooling": "Monitor Heating & Cooling",
+      "monitorMajorAppliances": "Monitor Major Appliances",
+      "monitorElectronics": "Monitor Electronics",
+      "monitorKitchenDevices": "Monitor Kitchen Devices",
+      "includeOutdoorLighting": "Include Outdoor Lighting",
+      "trackStandbyPower": "Track Standby Power",
+      "dailySummaryEmails": "Daily Summary Emails",
+      "weeklyProgressReports": "Weekly Progress Reports",
+      "suggestSavingAutomations": "Suggest Saving Automations",
+      "alertsForUnpluggedDevices": "Alerts for Unplugged Devices",
+      "resetToDefault": "Reset to Default",
+      "savePreferences": "Save Preferences",
+      "saveSuccess": "Preferences saved successfully"
     }
   },
   "reports": {
