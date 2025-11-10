@@ -1,7 +1,8 @@
+// typescript
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { map, tap, catchError, switchMap } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, catchError, switchMap, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthRepository } from '../../domain/model/repositories/auth.repository';
 import { UserRepositoryImpl } from '../../infrastructure/repositories/user-repository';
 import { TokenService } from '../../infrastructure/services/token.service';
@@ -60,6 +61,7 @@ export class AuthService {
       error: null
     });
 
+
     // Use API to validate credentials against db.json
     return this.http.get<any[]>(`${environment.apiUrl}/users?username=${username}&password=${password}`).pipe(
       map(users => {
@@ -108,6 +110,30 @@ export class AuthService {
         } else {
           throw new Error('Invalid credentials');
         }
+    const loginRequest = {
+      username: username,
+      password: password
+    };
+
+    return this.http.post<any>(`${environment.apiUrl}/api/v1/auth/login`, loginRequest).pipe(
+      switchMap(response => {
+        console.log('AuthService - API response:', response);
+
+        
+        const tokens = new TokenPair(
+          response.accessToken,
+          response.refreshToken || response.accessToken,
+          response.expiresIn || 3600
+        );
+
+       
+        this.tokenService.saveTokens(tokens);
+
+        
+        return this.getUserProfile(tokens.accessToken).pipe(
+          map(user => ({ user, tokens }))
+        );
+
       }),
       catchError(error => {
         const errorMessage = 'Invalid credentials';
@@ -121,9 +147,41 @@ export class AuthService {
     );
   }
 
+  private getUserProfile(token: string): Observable<User> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<any>(`${environment.apiUrl}/api/v1/auth/profile`, { headers }).pipe(
+      map(userData => {
+        const user = new User(
+          userData.id.toString(),
+          userData.email,
+          userData.firstName,
+          userData.lastName,
+          userData.role,
+          true,
+          new Date(userData.createdAt || new Date()),
+          new Date()
+        );
+
+        this.tokenService.saveUser(user);
+
+        this.updateAuthState({
+          user,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null
+        });
+
+        console.log('AuthService - Auth state updated with user:', user);
+
+        return user;
+      })
+    );
+  }
+
   logout(): Observable<void> {
     const token = this.tokenService.getAccessToken();
-    
+
     if (token) {
       return this.authRepository.logout(token).pipe(
         tap(() => {
@@ -135,20 +193,19 @@ export class AuthService {
           return throwError(() => new Error('Logout failed'));
         })
       );
-    } else {
-      this.clearAuthState();
-      return new Observable(observer => {
-        observer.next();
-        observer.complete();
-      });
     }
+
+    this.clearAuthState();
+    return new Observable(observer => {
+      observer.next();
+      observer.complete();
+    });
   }
 
   refreshToken(): Observable<TokenPair> {
     const refreshToken = this.tokenService.getRefreshToken();
-    
+
     if (!refreshToken) {
-      this.clearAuthState();
       return throwError(() => new Error('No refresh token available'));
     }
 
@@ -165,26 +222,23 @@ export class AuthService {
 
   validateToken(): Observable<boolean> {
     const token = this.tokenService.getAccessToken();
-    
+
     if (!token) {
-      return throwError(() => new Error('No token available'));
+      return new Observable(observer => {
+        observer.next(false);
+        observer.complete();
+      });
     }
 
-    return this.authRepository.validateToken(token);
-  }
-
-  resetPassword(email: string): Observable<void> {
-    return this.authRepository.resetPassword(email);
-  }
-
-  changePassword(oldPassword: string, newPassword: string): Observable<void> {
-    const user = this.getCurrentUser();
-    
-    if (!user) {
-      return throwError(() => new Error('User not authenticated'));
-    }
-
-    return this.authRepository.changePassword(user.id, oldPassword, newPassword);
+    return this.authRepository.validateToken(token).pipe(
+      catchError(() => {
+        this.clearAuthState();
+        return new Observable<boolean>(observer => {
+          observer.next(false);
+          observer.complete();
+        });
+      })
+    );
   }
 
   register(command: { firstName: string; lastName: string; email: string; username: string; password: string; phoneNumber: string; address: string }): Observable<{ user: User; tokens: TokenPair }> {
@@ -303,12 +357,67 @@ export class AuthService {
     return this.authStateSubject.value.isAuthenticated;
   }
 
-  isLoading(): boolean {
-    return this.authStateSubject.value.isLoading;
+  resetPassword(email: string): Observable<void> {
+    this.updateAuthState({
+      ...this.authStateSubject.value,
+      isLoading: true,
+      error: null
+    });
+
+    return this.http.post<any>(`${environment.apiUrl}/api/v1/auth/reset-password`, { email }).pipe(
+      tap(() => {
+        this.updateAuthState({
+          ...this.authStateSubject.value,
+          isLoading: false,
+          error: null
+        });
+      }),
+      map(() => undefined),
+      catchError(error => {
+        const errorMessage = 'Reset password failed';
+        this.updateAuthState({
+          ...this.authStateSubject.value,
+          isLoading: false,
+          error: errorMessage
+        });
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
-  getError(): string | null {
-    return this.authStateSubject.value.error;
+  changePassword(oldPassword: string, newPassword: string): Observable<void> {
+    this.updateAuthState({
+      ...this.authStateSubject.value,
+      isLoading: true,
+      error: null
+    });
+
+    const token = this.tokenService.getAccessToken();
+    const headers = token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : undefined;
+
+    return this.http.post<any>(
+      `${environment.apiUrl}/api/v1/auth/change-password`,
+      { oldPassword, newPassword },
+      headers ? { headers } : {}
+    ).pipe(
+      tap(() => {
+        this.updateAuthState({
+          ...this.authStateSubject.value,
+          isLoading: false,
+          error: null
+        });
+      }),
+      map(() => undefined),
+      catchError(error => {
+        const errorMessage = 'Change password failed';
+        this.updateAuthState({
+          ...this.authStateSubject.value,
+          isLoading: false,
+          error: errorMessage
+        });
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
   clearError(): void {
@@ -318,8 +427,8 @@ export class AuthService {
     });
   }
 
-  private updateAuthState(newState: AuthState): void {
-    this.authStateSubject.next(newState);
+  private updateAuthState(state: AuthState): void {
+    this.authStateSubject.next(state);
   }
 
   private clearAuthState(): void {
@@ -330,21 +439,5 @@ export class AuthService {
       isLoading: false,
       error: null
     });
-  }
-
-  private getErrorMessage(error: any): string {
-    if (error?.error?.message) {
-      return error.error.message;
-    }
-    if (error?.message) {
-      return error.message;
-    }
-    if (error?.status === 401) {
-      return 'Invalid username or password';
-    }
-    if (error?.status === 0) {
-      return 'Network error. Please check your connection.';
-    }
-    return 'An unexpected error occurred. Please try again.';
   }
 }
