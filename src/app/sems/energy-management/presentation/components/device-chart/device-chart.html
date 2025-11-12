@@ -2,47 +2,63 @@
   <div class="chart-header">
     <h3>{{ 'reports.deviceChart.title' | translate }}</h3>
   </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading data...</p>
+  </div>
   
-  <div class="chart-content">
-    <!-- Y-axis labels (device names) -->
-    <div class="y-axis">
-      <div class="device-label" *ngFor="let device of devices">
-        {{ device.nameKey | translate }}
-      </div>
+  <!-- Chart Content -->
+  <div *ngIf="!isLoading" class="chart-content">
+    <!-- No Data Message -->
+    <div *ngIf="devices.length === 0" class="no-data">
+      <p>{{ 'reports.deviceChart.noData' | translate }}</p>
     </div>
 
-    <!-- Chart area -->
-    <div class="chart-area">
-      <!-- X-axis grid lines -->
-      <div class="grid-lines">
-        <div class="grid-line" *ngFor="let label of getXAxisLabels()" 
-             [style.left.%]="(label / 60) * 100">
+    <!-- Chart with data -->
+    <div *ngIf="devices.length > 0">
+      <!-- Y-axis labels (device names) -->
+      <div class="y-axis">
+        <div class="device-label" *ngFor="let device of devices">
+          {{ device.displayName }}
         </div>
       </div>
 
-      <!-- Device bars -->
+      <!-- Chart area -->
+      <div class="chart-area">
+        <!-- X-axis grid lines -->
+        <div class="grid-lines">
+          <div class="grid-line" *ngFor="let label of getXAxisLabels(); let i = index" 
+               [style.left.%]="(i / (getXAxisLabels().length - 1)) * 100">
+          </div>
+        </div>
+
+        <!-- Device bars -->
       <div class="bars-container">
         <div class="bar-row" *ngFor="let device of devices">
           <div class="bar" 
                [style.width.%]="getBarWidth(device.consumption)"
                [style.background-color]="device.color"
-               [title]="(device.nameKey | translate) + ': ' + formatConsumption(device.consumption)">
+               [title]="device.displayName + ': ' + formatConsumption(device.consumption)">
           </div>
         </div>
       </div>
 
       <!-- X-axis labels -->
       <div class="x-axis">
-        <span class="x-label" *ngFor="let label of getXAxisLabels()" 
-              [style.left.%]="(label / 60) * 100">
+        <span class="x-label" *ngFor="let label of getXAxisLabels(); let i = index" 
+              [style.left.%]="(i / (getXAxisLabels().length - 1)) * 100">
           {{ label }} kWh
         </span>
       </div>
     </div>
+    </div>
   </div>
 
-  <div class="chart-footer">
-    <p class="summary-text">
+  <!-- Chart Footer -->
+  <div *ngIf="!isLoading && devices.length > 0" class="chart-footer" style="position: relative; z-index: 10; background-color: red !important;">
+    <p class="summary-text" style="color: white !important;">
       {{ 'reports.deviceChart.summary' | translate }}
     </p>
   </div>

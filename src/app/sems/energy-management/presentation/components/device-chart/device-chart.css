@@ -4,9 +4,12 @@
   padding: 24px;
   box-shadow: none;
   border: none;
-  height: 400px;
+  height: auto;
+  min-height: 500px;
+  max-height: none;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .chart-header h3 {
@@ -16,19 +19,121 @@
   color: #333;
 }
 
-.chart-content {
+/* Loading State */
+.loading-container {
   flex: 1;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 16px;
-  align-items: stretch;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Error State */
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  opacity: 0.7;
+}
+
+.error-container h4 {
+  color: #d32f2f;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.error-container p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.4;
+}
+
+.retry-button {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #1976d2;
+}
+
+.retry-button:active {
+  transform: translateY(1px);
+}
+
+/* No Data State */
+.no-data {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 300px;
+  color: #999;
+  padding-top: 120px;
+}
+
+.chart-content {
+  flex: 1;
+  height: auto;
+  min-height: 350px;
+  max-height: none;
+  overflow: visible;
+}
+
+.chart-content > div:not(.no-data) {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  align-items: start;
+  height: 100%;
 }
 
 .y-axis {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  width: 120px;
-  padding: 20px 0;
+  justify-content: space-between;
+  align-content: stretch;
+  padding: 20px 0 40px 0;
+  height: 280px;
 }
 
 .device-label {
@@ -36,11 +141,12 @@
   color: #333;
   font-weight: 500;
   text-align: right;
-  line-height: 1.2;
+  line-height: 32px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  height: 40px;
+  padding-right: 8px;
+  height: 48px;
 }
 
 .chart-area {
@@ -48,6 +154,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 280px;
+  height: auto;
 }
 
 .grid-lines {
@@ -68,27 +176,29 @@
 }
 
 .bars-container {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  padding: 20px 0;
+  justify-content: space-between;
+  padding: 20px 0 40px 0;
   z-index: 2;
   position: relative;
+  align-content: stretch;
+  height: 280px;
 }
 
 .bar-row {
-  height: 40px;
   display: flex;
   align-items: center;
+  padding: 0;
+  height: 48px;
 }
 
 .bar {
-  height: 24px;
-  border-radius: 4px;
+  height: 32px;
+  border-radius: 6px;
   transition: all 0.3s ease;
   cursor: pointer;
-  min-width: 8px;
+  min-width: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -114,23 +224,35 @@
 }
 
 .chart-footer {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
+  margin-top: 40px;
+  padding: 24px 24px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 12px;
+  border: 2px solid #1565C0;
+  box-shadow: 0 4px 12px rgba(21, 101, 192, 0.15);
+  min-height: 70px;
+  flex-shrink: 0;
+  width: 100%;
+  position: relative;
+  z-index: 100;
 }
 
 .summary-text {
-  font-size: 14px;
-  color: #333;
+  font-size: 16px;
+  color: #0d47a1;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.6;
+  font-weight: 700;
+  display: block;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
   .device-chart-container {
     padding: 16px;
-    height: 350px;
+    min-height: 400px;
   }
   
   .y-axis {
