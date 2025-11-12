@@ -184,6 +184,7 @@
       "weeklyAverage": "Promedio Semanal",
       "comparison": "Tu consumo esta semana es 5% menor que la semana pasada.",
       "encouragement": "¡Sigue así!",
+      "noData": "No hay datos de consumo disponibles",
       "days": {
         "MON": "LUN",
         "TUE": "MAR",
@@ -196,7 +197,8 @@
     },
     "deviceChart": {
       "title": "Ranking de Dispositivos",
-      "summary": "Tus 3 principales dispositivos representan más del 55% de tu consumo total de energía este mes.",
+      "summary": "Mostrando tus 3 dispositivos principales con el mayor consumo energético este mes.",
+      "noData": "No hay datos de dispositivos disponibles",
       "devices": {
         "airConditioning": "Aire Acondicionado",
         "refrigerator": "Refrigerador",

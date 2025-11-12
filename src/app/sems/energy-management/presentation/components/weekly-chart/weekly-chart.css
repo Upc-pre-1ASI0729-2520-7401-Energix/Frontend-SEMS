@@ -16,6 +16,96 @@
   color: #333;
 }
 
+/* Loading State */
+.loading-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Error State */
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  opacity: 0.7;
+}
+
+.error-container h4 {
+  color: #d32f2f;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.error-container p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.4;
+}
+
+.retry-button {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #1976d2;
+}
+
+.retry-button:active {
+  transform: translateY(1px);
+}
+
+/* No Data State */
+.no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #999;
+}
+
 .chart-content {
   flex: 1;
   position: relative;
@@ -28,8 +118,9 @@
 .average-line-container {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 20px);
   z-index: 2;
+  bottom: 20px;
 }
 
 .average-line {
@@ -61,6 +152,18 @@
   gap: 12px;
   padding: 0 10px;
   position: relative;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.chart-bars::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e0e0e0;
+  z-index: 1;
 }
 
 .bar-container {
@@ -78,15 +181,12 @@
   background: linear-gradient(180deg, #036AB0 0%, #FFFFFF 100%);
   transition: all 0.3s ease;
   cursor: pointer;
-  min-height: 10px;
+  min-height: 20px;
   position: absolute;
-  bottom: 30px;
-}
-
-.bar:hover {
-  background: linear-gradient(180deg, #98D4F0 0%, #5BA3E8 50%, #3E6BC4 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+  bottom: 20px;
+  transform-origin: bottom;
+  border-radius: 4px 4px 0 0;
+  z-index: 10;
 }
 
 .day-label {
@@ -94,9 +194,11 @@
   font-weight: 500;
   color: #666;
   position: absolute;
-  bottom: 8px;
+  bottom: -10px;
   text-align: center;
   width: 100%;
+  pointer-events: none;
+  z-index: 5;
 }
 
 .chart-footer {
