@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Device } from '../../../domain/model/device.entity';
@@ -9,7 +9,7 @@ import { DevicesService } from '../../../application/services/devices.service';
 
 @Component({
   selector: 'app-devices',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './devices.html',
   styleUrl: './devices.css'
 })
@@ -17,7 +17,7 @@ export class Devices implements OnInit, OnDestroy {
   devices: Device[] = [];
   loading = true;
   error: string | null = null;
-  
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -106,19 +106,19 @@ export class Devices implements OnInit, OnDestroy {
   getCategoryText(category: string): string {
     // Debug: Ver qué categoría está llegando
     console.log('Category received in devices:', category);
-    
+
     // Convertir "Heating & Cooling" a "heating_cooling"
     const categoryKey = category.toLowerCase()
       .replace(/\s*&\s*/g, '_')  // Reemplazar " & " con "_"
       .replace(/\s+/g, '_');     // Reemplazar espacios con "_"
-    
+
     console.log('Category key generated:', categoryKey);
-    
+
     const translationKey = `dashboard.devices.categories.${categoryKey}`;
     const translated = this.translateService.instant(translationKey);
-    
+
     console.log('Translation result:', translated);
-    
+
     // Si la traducción devuelve la misma clave, significa que no encontró la traducción
     return translated !== translationKey ? translated : category;
   }
@@ -145,7 +145,7 @@ export class Devices implements OnInit, OnDestroy {
     const confirmed = confirm(
       this.translateService.instant('dashboard.devices.deleteConfirmation', { name: deviceName })
     );
-    
+
     if (confirmed) {
       this.devicesService.deleteDevice(deviceId)
         .pipe(takeUntil(this.destroy$))
