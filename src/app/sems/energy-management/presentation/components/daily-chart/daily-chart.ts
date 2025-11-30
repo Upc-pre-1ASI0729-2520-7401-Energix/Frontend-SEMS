@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DailyConsumption } from '../../../domain/model/entities/daily-consumption.entity';
 
 @Component({
@@ -9,14 +9,15 @@ import { DailyConsumption } from '../../../domain/model/entities/daily-consumpti
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule
+    MatCardModule,
+    TranslateModule
   ],
   templateUrl: './daily-chart.html',
   styleUrl: './daily-chart.css'
 })
 export class DailyChart implements OnChanges {
   @Input() dailyConsumption?: DailyConsumption;
-  
+
   chartData: any[] = [];
   maxValue: number = 10;
   linePoints: string = '';

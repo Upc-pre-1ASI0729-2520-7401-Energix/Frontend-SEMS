@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>{{ dailyConsumptionLabel }}</mat-card-title>
   </mat-card-header>
-  
+
   <mat-card-content>
     <div class="chart-container" *ngIf="dailyConsumption">
       <div class="y-axis">
@@ -12,7 +12,7 @@
         <span class="y-label">{{ (maxValue * 0.25).toFixed(1) }} kWh</span>
         <span class="y-label">0 kWh</span>
       </div>
-      
+
       <div class="chart-area">
         <svg class="chart-svg" viewBox="0 0 800 300" preserveAspectRatio="none">
           <!-- Grid lines -->
@@ -21,7 +21,7 @@
           <line x1="0" y1="150" x2="800" y2="150" stroke="#e0e0e0" stroke-width="1"/>
           <line x1="0" y1="225" x2="800" y2="225" stroke="#e0e0e0" stroke-width="1"/>
           <line x1="0" y1="300" x2="800" y2="300" stroke="#e0e0e0" stroke-width="1"/>
-          
+
           <!-- Line chart -->
           <polyline
             [attr.points]="linePoints"
@@ -31,14 +31,14 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           />
-          
+
           <!-- Area fill -->
           <polygon
             [attr.points]="areaPoints"
             fill="url(#gradient)"
             opacity="0.3"
           />
-          
+
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" style="stop-color:#1976d2;stop-opacity:0.8" />
@@ -46,7 +46,7 @@
             </linearGradient>
           </defs>
         </svg>
-        
+
         <div class="x-axis">
           <span class="x-label">01:00 - 06:00 AM</span>
           <span class="x-label">05:00 - 10:00 AM</span>
@@ -57,9 +57,9 @@
         </div>
       </div>
     </div>
-    
+
     <div class="no-data" *ngIf="!dailyConsumption">
-      <p>No consumption data available</p>
+      <p>{{ 'dashboard.charts.noConsumptionData' | translate }}</p>
     </div>
   </mat-card-content>
 </mat-card>
