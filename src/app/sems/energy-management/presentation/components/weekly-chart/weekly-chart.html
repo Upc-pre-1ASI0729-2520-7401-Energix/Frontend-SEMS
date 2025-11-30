@@ -2,11 +2,11 @@
   <div class="chart-header">
     <h3>{{ 'reports.weeklyChart.title' | translate }}</h3>
   </div>
-  
+
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
-    <p>Loading data...</p>
+    <p>{{ 'common.loading' | translate }}</p>
   </div>
 
   <!-- Chart Content -->
@@ -29,7 +29,7 @@
       <!-- Chart bars -->
       <div class="chart-bars">
         <div class="bar-container" *ngFor="let data of weeklyData">
-          <div class="bar" 
+          <div class="bar"
                [style.height.%]="getBarHeight(data.consumption)"
                [style.opacity]="weeklyAverage > 0 ? 1 : 0"
                [title]="formatTooltip(data)">
