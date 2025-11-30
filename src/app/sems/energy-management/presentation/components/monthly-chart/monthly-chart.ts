@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MonthlyComparison } from '../../../domain/model/entities/monthly-comparison.entity';
 
 @Component({
@@ -9,14 +9,15 @@ import { MonthlyComparison } from '../../../domain/model/entities/monthly-compar
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule
+    MatCardModule,
+    TranslateModule
   ],
   templateUrl: './monthly-chart.html',
   styleUrl: './monthly-chart.css'
 })
 export class MonthlyChart implements OnChanges {
   @Input() monthlyComparison?: MonthlyComparison;
-  
+
   maxValue: number = 100;
 
   constructor(private translate: TranslateService) {}
@@ -29,7 +30,7 @@ export class MonthlyChart implements OnChanges {
 
   calculateMaxValue(): void {
     if (!this.monthlyComparison) return;
-    
+
     const values = this.monthlyComparison.months.map(m => m.consumption);
     this.maxValue = Math.max(...values, 100);
   }
