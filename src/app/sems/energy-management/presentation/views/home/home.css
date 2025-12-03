@@ -4,106 +4,111 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
+  /* Increased gap */
+  padding: 32px;
+  /* Added padding */
+  box-sizing: border-box;
 }
 
 /* Stats Cards Row */
 .stats-row {
   display: flex;
-  gap: 20px;
+  gap: 32px;
+  /* Increased gap */
   justify-content: space-between;
   flex-wrap: wrap;
   width: 100%;
-  box-sizing: border-box;
 }
 
 .stats-row app-stats-card {
   flex: 1;
-  min-width: 180px;
-  max-width: calc(20% - 16px);
+  min-width: 200px;
+  /* Ensure cards don't get too small */
 }
 
 /* Charts Row */
 .charts-row {
   display: flex;
-  gap: 20px;
-  height: 400px;
+  gap: 32px;
+  /* Increased gap */
   width: 100%;
-  box-sizing: border-box;
+  /* Removed fixed height */
 }
 
 .chart-large {
   flex: 2;
   min-width: 0;
-  max-width: 66.67%;
 }
 
 .chart-small {
   flex: 1;
   min-width: 0;
-  max-width: 33.33%;
 }
 
-/* Bottom Row */
-.bottom-row {
-  display: flex;
-  gap: 20px;
-  height: 300px;
+/* Monthly Row */
+.monthly-row {
   width: 100%;
-  box-sizing: border-box;
+  /* Removed fixed height */
 }
 
-.chart-medium {
-  flex: 1;
-  min-width: 0;
-  max-width: 33.33%;
+/* Info Row (Alerts & Devices) */
+.info-row {
+  display: flex;
+  gap: 32px;
+  /* Increased gap */
+  width: 100%;
+  /* Removed fixed height */
 }
 
 .alerts-section {
   flex: 1;
   min-width: 0;
-  max-width: 33.33%;
 }
 
 .devices-section {
   flex: 1;
   min-width: 0;
-  max-width: 33.33%;
 }
 
 /* Alerts Card Styling */
 .alerts-card {
   background: white;
   height: 100%;
+  border-radius: 20px !important;
+  /* Premium rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
 }
 
 .alert-item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 8px;
+  gap: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
   border-left: 4px solid;
 }
 
 .alert-item.warning {
-  background-color: #fff3cd;
+  background-color: #fff8e1;
+  /* Softer yellow */
   border-left-color: #ffc107;
   color: #856404;
 }
 
 .alert-item.info {
-  background-color: #d1ecf1;
-  border-left-color: #17a2b8;
-  color: #0c5460;
+  background-color: #e3f2fd;
+  /* Softer blue */
+  border-left-color: #2196f3;
+  color: #0d47a1;
 }
 
 .alert-item mat-icon {
   color: inherit;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .alert-content {
@@ -112,63 +117,63 @@
 
 .alert-content strong {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-weight: 600;
+  font-size: 15px;
 }
 
 .alert-content p {
   margin: 0;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.5;
+  color: #555;
+}
+
+.no-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #888;
+  gap: 16px;
+}
+
+.no-alerts mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #4caf50;
+  opacity: 0.8;
+}
+
+.no-alerts p {
+  margin: 0;
+  font-size: 16px;
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
   .charts-row {
     flex-direction: column;
-    height: auto;
   }
 
-  .chart-large,
-  .chart-small {
-    height: 300px;
-    max-width: 100%;
-  }
-
-  .bottom-row {
-    flex-wrap: wrap;
-  }
-
-  .chart-medium,
-  .alerts-section,
-  .devices-section {
-    max-width: 100%;
+  .info-row {
+    flex-direction: column;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 10px;
+    padding: 16px;
+    gap: 20px;
   }
 
   .stats-row {
-    flex-direction: column;
+    gap: 16px;
   }
 
   .stats-row app-stats-card {
-    max-width: 100%;
-    min-width: unset;
-  }
-
-  .bottom-row {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .chart-medium,
-  .alerts-section,
-  .devices-section {
-    height: 300px;
-    max-width: 100%;
+    min-width: 100%;
   }
 }

@@ -25,7 +25,7 @@ export class Devices implements OnInit, OnDestroy {
     private readonly translateService: TranslateService,
     private readonly router: Router,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Force change detection
@@ -45,13 +45,19 @@ export class Devices implements OnInit, OnDestroy {
       .subscribe({
         next: (devices) => {
           console.log('Devices loaded from backend:', devices);
-          this.devices = devices;
-          this.loading = false;
+          setTimeout(() => {
+            this.devices = devices;
+            this.loading = false;
+            this.cdr.detectChanges();
+          }, 50);
         },
         error: (error) => {
           console.error('Error loading devices:', error);
-          this.error = 'Error loading devices';
-          this.loading = false;
+          setTimeout(() => {
+            this.error = 'Error loading devices';
+            this.loading = false;
+            this.cdr.detectChanges();
+          }, 50);
         }
       });
   }
@@ -93,7 +99,7 @@ export class Devices implements OnInit, OnDestroy {
     if (!status) {
       return 'N/A';
     }
-    
+
     switch (status.toLowerCase()) {
       case 'on':
         return this.translateService.instant('dashboard.devices.status.on');
@@ -111,7 +117,7 @@ export class Devices implements OnInit, OnDestroy {
   getCategoryText(category: string): string {
     // Debug: Ver qué categoría está llegando
     console.log('Category received in devices:', category);
-    
+
     // Handle undefined or null
     if (!category) {
       return 'N/A';

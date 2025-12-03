@@ -20,7 +20,7 @@ import { Device } from '../../../domain/model/device.entity';
 export class DeviceList {
   @Input() devices: Device[] = [];
 
-  constructor(private translate: TranslateService) {}
+  constructor(private translate: TranslateService) { }
 
   // Getter para mostrar solo los primeros 3 dispositivos
   get limitedDevices(): Device[] {
@@ -36,7 +36,7 @@ export class DeviceList {
 
     // Handle undefined or null category
     if (!category) {
-      console.log('⚠️ Category is undefined or null, using default');
+      console.log('Category is undefined or null, using default');
       return this.translate.instant('dashboard.devices.categories.other');
     }
 

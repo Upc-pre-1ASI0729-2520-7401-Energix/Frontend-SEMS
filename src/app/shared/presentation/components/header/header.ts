@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -52,11 +52,11 @@ export class Header implements OnInit, OnDestroy {
     // Suscribirse solo al estado de autenticación
     this.combinedSubscription = this.authController.getCurrentAuthState()
       .subscribe(authState => {
-        console.log('🎯 Header - Auth state received:', authState);
+        console.log('Header - Auth state received:', authState);
 
         if (authState?.user) {
           const user = authState.user;
-          console.log('🎯 Header - User found:', {
+          console.log('Header - User found:', {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -69,10 +69,10 @@ export class Header implements OnInit, OnDestroy {
 
           this.userAvatarUrl = user.profilePhotoUrl || 'assets/default-avatar.png';
 
-          console.log('🎯 Header - userName set to:', this.userName);
-          console.log('🎯 Header - userAvatarUrl set to:', this.userAvatarUrl);
+          console.log('Header - userName set to:', this.userName);
+          console.log('Header - userAvatarUrl set to:', this.userAvatarUrl);
         } else {
-          console.log('🎯 Header - No user found, using defaults');
+          console.log('Header - No user found, using defaults');
           this.userName = 'User';
           this.userAvatarUrl = 'assets/default-avatar.png';
         }
@@ -114,5 +114,25 @@ export class Header implements OnInit, OnDestroy {
 
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    // If notifications are not shown, do nothing
+    if (!this.showNotifications) return;
+
+    const target = event.target as HTMLElement;
+
+    // Check if click is inside the notification button
+    const isInsideButton = target.closest('.notification-button');
+
+    // Check if click is inside the notification popup (which is inside app-notifications)
+    // We need to check for the app-notifications element or its children
+    const isInsidePopup = target.closest('app-notifications');
+
+    // If click is outside both, close notifications
+    if (!isInsideButton && !isInsidePopup) {
+      this.showNotifications = false;
+    }
   }
 }

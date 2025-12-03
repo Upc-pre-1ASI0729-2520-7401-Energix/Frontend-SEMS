@@ -1,4 +1,3 @@
-// typescript
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError, switchMap, tap } from 'rxjs/operators';
@@ -52,7 +51,7 @@ export class AuthService {
       }).subscribe({
         next: (profileData) => {
           console.log('AuthService - Loaded profile on init:', profileData);
-          
+
           const updatedUser = new User(
             (profileData.id ?? 0).toString(),
             profileData.email,
@@ -67,9 +66,9 @@ export class AuthService {
             profileData.address,
             profileData.profilePhotoUrl
           );
-          
+
           this.tokenService.saveUser(updatedUser);
-          
+
           this.updateAuthState({
             user: updatedUser,
             isAuthenticated: true,
@@ -102,14 +101,14 @@ export class AuthService {
     return this.http.post<any>(`${environment.apiUrl}/api/v1/authentication/sign-in`, { email: username, password }).pipe(
       switchMap(response => {
         console.log('AuthService - Full API response:', JSON.stringify(response, null, 2));
-        
+
         // Extract token - could be 'token', 'accessToken', or 'access_token'
         const token = response.token || response.accessToken || response.access_token;
         const refreshToken = response.refreshToken || response.refresh_token;
-        
+
         console.log('AuthService - Extracted token:', token);
         console.log('AuthService - Extracted refreshToken:', refreshToken);
-        
+
         const tokens = new TokenPair(
           token,
           refreshToken || undefined,
@@ -118,14 +117,14 @@ export class AuthService {
 
         // Save tokens first
         this.tokenService.saveTokens(tokens);
-        
+
         // Now get the full profile with firstName and lastName
         return this.http.get<any>(`${environment.apiUrl}/api/v1/profiles/me`, {
           headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
         }).pipe(
           map(profileData => {
             console.log('AuthService - Profile data from API:', profileData);
-            
+
             const user = new User(
               (profileData.id ?? 0).toString(),
               profileData.email,
@@ -163,7 +162,7 @@ export class AuthService {
       catchError(error => {
         console.error('AuthService - Login error:', error);
         const errorMessage = this.getErrorMessage(error);
-        
+
         this.updateAuthState({
           ...this.authStateSubject.value,
           isLoading: false,
@@ -280,14 +279,14 @@ export class AuthService {
     return this.http.post<any>(`${environment.apiUrl}/api/v1/authentication/sign-up`, command).pipe(
       switchMap(response => {
         console.log('AuthService - User registered successfully:', response);
-        
+
         // After registration, automatically login to get tokens
         return this.login(command.email, command.password);
       }),
       catchError(error => {
         console.error('AuthService - Register error:', error);
         const errorMessage = this.getErrorMessage(error);
-        
+
         this.updateAuthState({
           ...this.authStateSubject.value,
           isLoading: false,

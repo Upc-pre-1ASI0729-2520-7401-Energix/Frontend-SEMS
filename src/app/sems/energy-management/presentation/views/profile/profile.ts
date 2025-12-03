@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../../authentication/application/services/auth.service';
@@ -26,33 +26,34 @@ export class ProfileComponent implements OnInit {
   constructor(
     private readonly authService: AuthService,
     private readonly profileService: ProfileService,
-    private readonly ngZone: NgZone
-  ) {}
+    private readonly ngZone: NgZone,
+    private readonly cdr: ChangeDetectorRef
+  ) { }
 
 
   ngOnInit(): void {
-    console.log('🔍 ProfileComponent - Iniciando carga de perfil...');
-    
+    console.log('ProfileComponent - Iniciando carga de perfil...');
+
     // Obtener el usuario del AuthService
     this.user = this.authService.getCurrentUser();
-    console.log('🔍 ProfileComponent - Usuario actual:', this.user);
-    
+    console.log('ProfileComponent - Usuario actual:', this.user);
+
     if (this.user) {
       // Cargar datos del perfil desde el backend
       this.loadProfileFromBackend();
     } else {
-      console.log('❌ ProfileComponent - No hay usuario autenticado');
+      console.log('ProfileComponent - No hay usuario autenticado');
       this.isLoading = false;
     }
   }
 
   private loadProfileFromBackend(): void {
-    console.log('🔍 ProfileComponent - Cargando perfil desde backend...');
-    
+    console.log('ProfileComponent - Cargando perfil desde backend...');
+
     this.profileService.loadUserProfile('me').subscribe({
       next: (profile) => {
-        console.log('🔍 ProfileComponent - Perfil cargado:', profile);
-        
+        console.log('ProfileComponent - Perfil cargado:', profile);
+
         this.editableProfile = {
           id: profile.id,
           firstName: profile.firstName,
@@ -62,15 +63,21 @@ export class ProfileComponent implements OnInit {
           address: profile.address,
           profilePhotoUrl: profile.profilePhotoUrl
         };
-        
-        console.log('🔍 ProfileComponent - editableProfile created:', this.editableProfile);
-        
-        this.profilePhotoUrl = profile.profilePhotoUrl || '/assets/default-avatar.png';
-        this.isLoading = false;
+
+        console.log('ProfileComponent - editableProfile created:', this.editableProfile);
+
+        setTimeout(() => {
+          this.profilePhotoUrl = profile.profilePhotoUrl || '/assets/default-avatar.png';
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }, 50);
       },
       error: (error) => {
-        console.error('❌ ProfileComponent - Error cargando perfil:', error);
-        this.isLoading = false;
+        console.error('ProfileComponent - Error cargando perfil:', error);
+        setTimeout(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }, 50);
       }
     });
   }
@@ -82,7 +89,7 @@ export class ProfileComponent implements OnInit {
 
   saveChanges(): void {
     console.log('ProfileComponent - Guardando cambios:', this.editableProfile);
-    
+
     if (this.user && this.editableProfile) {
       const profileResource = {
         id: this.editableProfile.id || '',
@@ -93,7 +100,7 @@ export class ProfileComponent implements OnInit {
         address: this.editableProfile.address,
         profilePhotoUrl: this.editableProfile.profilePhotoUrl
       };
-      
+
       this.profileService.updateProfile('me', profileResource).subscribe({
         next: (updatedProfile) => {
           console.log('ProfileComponent - Perfil actualizado:', updatedProfile);
@@ -110,16 +117,16 @@ export class ProfileComponent implements OnInit {
 
   changePhoto(): void {
     const photoUrl = prompt('Ingresa la URL de tu foto de perfil:', this.profilePhotoUrl);
-    
+
     if (photoUrl && photoUrl.trim() !== '') {
       this.profilePhotoUrl = photoUrl.trim();
       this.editableProfile = {
         ...this.editableProfile,
         profilePhotoUrl: photoUrl.trim()
       };
-      
+
       console.log('ProfileComponent - Nueva URL de foto:', photoUrl);
-      
+
       // Guardar automáticamente el cambio de foto
       if (this.user && this.editableProfile) {
         const profileResource = {
@@ -131,9 +138,9 @@ export class ProfileComponent implements OnInit {
           address: this.editableProfile.address,
           profilePhotoUrl: photoUrl.trim()
         };
-        
+
         console.log('ProfileComponent - Guardando perfil con nueva foto:', profileResource);
-        
+
         this.profileService.updateProfile('me', profileResource).subscribe({
           next: (updatedProfile) => {
             console.log('ProfileComponent - Foto de perfil actualizada:', updatedProfile);

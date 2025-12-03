@@ -15,13 +15,13 @@ export class DashboardService {
   constructor(
     private readonly dashboardRepository: DashboardRepositoryImpl,
     private readonly dashboardStore: DashboardStore
-  ) {}
+  ) { }
 
   loadUnifiedDashboard(): Observable<void> {
-    console.log('🚀 Loading unified dashboard data...');
+    console.log('Loading unified dashboard data...');
     return this.dashboardRepository.getUnifiedDashboard().pipe(
       tap(data => {
-        console.log('✅ Unified dashboard data loaded successfully');
+        console.log('Unified dashboard data loaded successfully');
         this.dashboardStore.setStats(data.stats);
         this.dashboardStore.setDailyConsumption(data.dailyConsumption);
         this.dashboardStore.setConsumptionByCategory(data.categoryConsumption);
@@ -29,7 +29,7 @@ export class DashboardService {
       }),
       map(() => undefined),
       catchError(error => {
-        console.error('❌ Error loading unified dashboard:', error);
+        console.error('Error loading unified dashboard:', error);
         this.dashboardStore.setError(error.message || 'Error loading dashboard');
         throw error;
       })

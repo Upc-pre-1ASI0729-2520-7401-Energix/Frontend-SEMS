@@ -93,24 +93,24 @@ export class Home implements OnInit, OnDestroy {
   private loadDashboardData(): void {
     this.isLoading = true;
 
-    // 🔐 Check authentication state
+    // Check authentication state
     this.authService.authState$.subscribe(authState => {
-      console.log('🔐 Home - Authentication state changed:', authState);
+      console.log('Home - Authentication state changed:', authState);
 
       // If still loading, wait
       if (authState.isLoading) {
-        console.log('⏳ Home - Auth still loading, waiting...');
+        console.log('Home - Auth still loading, waiting...');
         return;
       }
 
       if (!authState.isAuthenticated || !authState.user) {
-        console.warn('⚠️ Home - User not authenticated, redirecting to login');
+        console.warn('Home - User not authenticated, redirecting to login');
         this.router.navigate(['/login']);
         return;
       }
 
       const currentUser = authState.user;
-      console.log('✅ Home - User authenticated - Loading dashboard for user:', currentUser.id, currentUser.email);
+      console.log('Home - User authenticated - Loading dashboard for user:', currentUser.id, currentUser.email);
 
       // Load dashboard data using backend endpoints (they filter by authenticated user automatically)
       this.loadBackendData();
@@ -118,38 +118,38 @@ export class Home implements OnInit, OnDestroy {
   }
 
   private loadBackendData(): void {
-    console.log('📊 Loading unified dashboard data from backend...');
+    console.log('Loading unified dashboard data from backend...');
 
-    // 🚀 Load all dashboard data from unified endpoint: /api/v1/dashboard
+    // Load all dashboard data from unified endpoint: /api/v1/dashboard
     this.dashboardService.loadUnifiedDashboard().subscribe({
       next: () => {
-        console.log('✅ Unified dashboard data loaded successfully');
+        console.log('Unified dashboard data loaded successfully');
 
         // Subscribe to dashboard state to get the loaded data
         this.dashboardService.getDashboardState().subscribe(state => {
           if (state.stats) {
             this.dashboardStats = state.stats;
-            console.log('📊 Dashboard stats:', state.stats);
+            console.log('Dashboard stats:', state.stats);
           }
 
           if (state.dailyConsumption) {
             this.dailyConsumption = state.dailyConsumption;
-            console.log('📅 Daily consumption:', state.dailyConsumption);
+            console.log('Daily consumption:', state.dailyConsumption);
           }
 
           if (state.consumptionByCategory) {
             this.consumptionByCategory = state.consumptionByCategory;
-            console.log('🏷️ Category consumption:', state.consumptionByCategory);
+            console.log('Category consumption:', state.consumptionByCategory);
           }
 
           if (state.devices) {
             this.devices = state.devices || [];
-            console.log('🔌 Devices from dashboard state:', this.devices.length, 'devices');
-            console.log('🔌 Full devices array:', JSON.stringify(this.devices, null, 2));
+            console.log('Devices from dashboard state:', this.devices.length, 'devices');
+            console.log('Full devices array:', JSON.stringify(this.devices, null, 2));
 
             // Log device details
             this.devices.forEach((device, index) => {
-              console.log(`🔌 Device ${index + 1}:`, {
+              console.log(`Device ${index + 1}:`, {
                 id: device.id,
                 name: device.name,
                 category: device.category,
@@ -160,19 +160,14 @@ export class Home implements OnInit, OnDestroy {
               });
             });
           }
-
-          setTimeout(() => {
-            this.isLoading = false;
-            this.cdr.detectChanges();
-          }, 400);
         });
 
-        // 🔌 Cargar dispositivos del endpoint /api/v1/devices como fallback
-        console.log('🔌 Loading devices from /api/v1/devices endpoint...');
+        // Cargar dispositivos del endpoint /api/v1/devices como fallback
+        console.log('Loading devices from /api/v1/devices endpoint...');
         this.dashboardService.loadDevices().subscribe({
           next: (devices: Device[]) => {
-            console.log('✅ Devices loaded from /api/v1/devices:', devices.length, 'devices');
-            console.log('✅ Device details:', devices);
+            console.log('Devices loaded from /api/v1/devices:', devices.length, 'devices');
+            console.log('Device details:', devices);
             // Solo usar estos dispositivos si el dashboard no trajo ninguno
             if (this.devices.length === 0) {
               this.devices = devices;
@@ -180,12 +175,12 @@ export class Home implements OnInit, OnDestroy {
             }
           },
           error: (error: any) => {
-            console.error('❌ Error loading devices from /api/v1/devices:', error);
+            console.error('Error loading devices from /api/v1/devices:', error);
           }
         });
       },
       error: (error: any) => {
-        console.error('❌ Error loading unified dashboard:', error);
+        console.error('Error loading unified dashboard:', error);
         // Set empty/default data
         this.dashboardStats = new DashboardStats(0, 0, 0, 0, 0, 'S/.');
         this.dailyConsumption = undefined;
@@ -194,7 +189,7 @@ export class Home implements OnInit, OnDestroy {
         setTimeout(() => {
           this.isLoading = false;
           this.cdr.detectChanges();
-        }, 400);
+        }, 50);
       }
     });
 
@@ -287,14 +282,14 @@ export class Home implements OnInit, OnDestroy {
   getCalculatedEnergyConsumption(): string {
     // Prefer backend data from unified dashboard
     if (this.dashboardStats && this.dashboardStats.energyConsumption >= 0) {
-      console.log('📊 Using monthly saving goal from backend:', this.dashboardStats.energyConsumption);
+      console.log('Using monthly saving goal from backend:', this.dashboardStats.energyConsumption);
       return `${this.dashboardStats.energyConsumption.toFixed(1)} kWh`;
     }
 
-    console.log('🔌 Calculating energy consumption for', this.devices.length, 'devices');
+    console.log('Calculating energy consumption for', this.devices.length, 'devices');
 
     if (!this.hasDevices) {
-      console.log('⚠️ No devices found for user');
+      console.log('No devices found for user');
       return this.translate.instant('dashboard.stats.noData');
     }
 
@@ -304,18 +299,18 @@ export class Home implements OnInit, OnDestroy {
       // Get consumption value from device
       if (device.energyConsumptionValue) {
         deviceConsumption = device.energyConsumptionValue;
-        console.log(`📊 Device "${device.name}" consumption (numeric):`, deviceConsumption);
+        console.log(`Device "${device.name}" consumption (numeric):`, deviceConsumption);
       } else if (device.energyConsumption) {
         // Parse the string value (e.g., "2.5 kWh this week" -> 2.5)
         const match = device.energyConsumption.match(/(\d+\.?\d*)/);
         deviceConsumption = match ? parseFloat(match[1]) : 0;
-        console.log(`📊 Device "${device.name}" consumption (parsed):`, deviceConsumption, 'from:', device.energyConsumption);
+        console.log(`Device "${device.name}" consumption (parsed):`, deviceConsumption, 'from:', device.energyConsumption);
       }
 
       return total + deviceConsumption;
     }, 0);
 
-    console.log('📊 Total energy consumption calculated:', totalConsumption, 'kWh');
+    console.log('Total energy consumption calculated:', totalConsumption, 'kWh');
 
     // Add some context to the consumption display
     if (totalConsumption > 0) {

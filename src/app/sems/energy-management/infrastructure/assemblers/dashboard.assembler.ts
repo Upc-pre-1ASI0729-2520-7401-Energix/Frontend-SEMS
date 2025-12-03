@@ -25,7 +25,7 @@ export class DashboardAssembler {
   }
 
   static toDashboardStatsFromUnified(response: UnifiedDashboardResponse): DashboardStats {
-    console.log('🔄 Mapping unified dashboard response to DashboardStats:', response);
+    console.log('Mapping unified dashboard response to DashboardStats:', response);
     return new DashboardStats(
       response.monthlySavingGoalKwh || 0,
       response.estimatedSavingsPercent || 0,
@@ -84,20 +84,20 @@ export class DashboardAssembler {
   }
 
   static toDevicesFromUnified(response: UnifiedDashboardResponse): Device[] {
-    console.log('🔄 Raw devices from API:', JSON.stringify(response.devices, null, 2));
-    console.log('🔄 Response type:', typeof response.devices);
-    console.log('🔄 First device keys:', response.devices[0] ? Object.keys(response.devices[0]) : 'No devices');
-    
+    console.log('Raw devices from API:', JSON.stringify(response.devices, null, 2));
+    console.log('Response type:', typeof response.devices);
+    console.log('First device keys:', response.devices[0] ? Object.keys(response.devices[0]) : 'No devices');
+
     if (!response.devices || response.devices.length === 0) {
-      console.log('⚠️ No devices in response');
+      console.log('No devices in response');
       return [];
     }
-    
+
     const mappedDevices = response.devices
       .map((device: any) => {
-        console.log('🔍 Processing device RAW:', JSON.stringify(device, null, 2));
-        console.log('🔍 All device keys:', Object.keys(device));
-        console.log('🔍 Device fields:', {
+        console.log('Processing device RAW:', JSON.stringify(device, null, 2));
+        console.log('All device keys:', Object.keys(device));
+        console.log('Device fields:', {
           id: device.id,
           nombre: device.nombre,
           categoria: device.categoria,
@@ -107,7 +107,7 @@ export class DashboardAssembler {
           ultimaActividad: device.ultimaActividad,
           activo: device.activo
         });
-        
+
         // Mapear usando cualquier nombre de campo que venga
         const deviceId = device.id || device.deviceId || device.Id;
         const deviceName = device.nombre || device.name || device.deviceName || `Device ${deviceId}`;
@@ -117,8 +117,8 @@ export class DashboardAssembler {
         const deviceLocation = device.ubicacion || device.location || 'Sin ubicación';
         const deviceLastActive = device.ultimaActividad || device.lastActive || device.lastActivity || 'NOW';
         const deviceActive = device.activo !== undefined ? device.activo : (device.isActive !== undefined ? device.isActive : 1);
-        
-        console.log('✅ Mapped device:', {
+
+        console.log('Mapped device:', {
           id: deviceId,
           name: deviceName,
           category: deviceCategory,
@@ -126,7 +126,7 @@ export class DashboardAssembler {
           status: deviceStatus,
           location: deviceLocation
         });
-        
+
         return {
           id: deviceId?.toString() || '0',
           name: deviceName,
@@ -144,21 +144,21 @@ export class DashboardAssembler {
         };
       })
       .filter(device => device !== null) as Device[];
-    
-    console.log('✅ Valid devices mapped:', mappedDevices.length);
+
+    console.log('Valid devices mapped:', mappedDevices.length);
     return mappedDevices;
   }
 
   static toDailyConsumptionFromUnified(response: UnifiedDashboardResponse): DailyConsumption {
-    console.log('🔄 Mapping unified dashboard daily consumption:', response.dailyConsumption);
+    console.log('Mapping unified dashboard daily consumption:', response.dailyConsumption);
     const dataPoints = response.dailyConsumption.map(point => ({
       time: point.timestamp,
       value: point.kwh
     }));
-    
+
     const totalConsumption = dataPoints.reduce((sum, point) => sum + point.value, 0);
     const peakPoint = dataPoints.reduce((max, point) => point.value > max.value ? point : max, dataPoints[0] || { time: '', value: 0 });
-    
+
     return new DailyConsumption(
       new Date(),
       dataPoints,
@@ -169,16 +169,16 @@ export class DashboardAssembler {
   }
 
   static toConsumptionByCategoryFromUnified(response: UnifiedDashboardResponse): ConsumptionByCategory {
-    console.log('🔄 Mapping unified dashboard category consumption:', response.categoryConsumption);
+    console.log('Mapping unified dashboard category consumption:', response.categoryConsumption);
     const categories = response.categoryConsumption.map(cat => ({
       name: cat.category,
       value: cat.kwh,
       percentage: cat.percentage,
       color: this.getCategoryColor(cat.category)
     }));
-    
+
     const totalConsumption = categories.reduce((sum, cat) => sum + cat.value, 0);
-    
+
     return new ConsumptionByCategory(
       categories,
       totalConsumption
