@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://backend-sems-40cb.onrender.com',
+  apiUrl: 'https://theft-muscles-inner-protection.trycloudflare.com',
   tokenKey: 'sems_token',
   refreshTokenKey: 'sems_refresh_token',
   userKey: 'sems_user'
