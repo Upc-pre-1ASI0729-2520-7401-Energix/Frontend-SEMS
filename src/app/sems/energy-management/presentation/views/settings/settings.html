@@ -1,4 +1,3 @@
-<!-- settings.html - VERSIÓN CORRECTA CON BINDINGS -->
 <div class="settings-content">
   <section class="settings-container">
     <h1>{{ t('settings.title') }}</h1>
@@ -11,7 +10,6 @@
           <button mat-mini-fab color="primary" class="add-btn" (click)="onAddNewRule()">+</button>
         </div>
         <div class="toggles">
-          <!-- ⬇️ CONECTADO CON [checked] y (change) -->
           <mat-checkbox
             [checked]="editableSettings.autoSavingMode?.turnOffPatio"
             (change)="onAutoSavingModeChange('turnOffPatio', $event.checked)">
@@ -110,9 +108,9 @@
       <div class="card">
         <h2>{{ t('settings.support.title') }}</h2>
         <ul>
-          <li><a href="#">{{ t('settings.support.helpCenter') }}</a></li>
-          <li><a href="#">{{ t('settings.support.contact') }}</a></li>
-          <li><a href="#">{{ t('settings.support.tutorials') }}</a></li>
+          <li><a (click)="supportsComponent?.openFaqModal()">{{ t('settings.support.helpCenter') }}</a></li>
+          <li><a (click)="supportsComponent?.openHelpModal()">{{ t('settings.support.contact') }}</a></li>
+          <li><a (click)="supportsComponent?.openTutorialsModal()">{{ t('settings.support.tutorials') }}</a></li>
         </ul>
       </div>
 
@@ -134,7 +132,6 @@
       </div>
     </div>
 
-    <!-- ⬇️ BOTONES CON (click) Y [disabled] -->
     <div class="actions">
       <button
         mat-raised-button
@@ -155,4 +152,7 @@
       </button>
     </div>
   </section>
+
+  <!-- Componente de modales -->
+  <app-settings-suports #supportsComponent></app-settings-suports>
 </div>
