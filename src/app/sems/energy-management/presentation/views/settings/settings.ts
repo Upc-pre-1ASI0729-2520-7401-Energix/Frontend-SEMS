@@ -1,5 +1,5 @@
 // src/app/sems/energy-management/presentation/views/settings/settings.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,7 @@ import { SettingsService } from '../../../application/services/settings.service'
 import { SettingsStore } from '../../../application/state/settings.store';
 import { AuthService } from '../../../../authentication/application/services/auth.service';
 import { SettingsResource } from '../../../infrastructure/resources/settings.resource';
+import {SettingsSuports} from '../settings-suports/settings-suports';
 
 @Component({
   selector: 'app-settings',
@@ -19,12 +20,15 @@ import { SettingsResource } from '../../../infrastructure/resources/settings.res
     CommonModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    SettingsSuports
   ],
   templateUrl: './settings.html',
   styleUrls: ['./settings.css']
 })
+
 export class Settings implements OnInit, OnDestroy {
+  @ViewChild('supportsComponent') supportsComponent!: SettingsSuports;
   private destroy$ = new Subject<void>();
 
   currentSettings: SettingsResource | null = null;
