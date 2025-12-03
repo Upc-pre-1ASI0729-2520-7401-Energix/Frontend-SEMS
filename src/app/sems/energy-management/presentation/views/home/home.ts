@@ -383,8 +383,10 @@ export class Home implements OnInit, OnDestroy {
   }
 
   get hasMonthlyData(): boolean {
-    return this.monthlyComparison?.months ? this.monthlyComparison.months.length > 0 : false;
+    // Siempre mostrar el gráfico mensual con datos estáticos
+    return true;
   }
+
 
   get energyConsumptionLabel(): string {
     return this.translate.instant('dashboard.stats.energyConsumption');

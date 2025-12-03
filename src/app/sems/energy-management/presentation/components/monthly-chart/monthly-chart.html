@@ -5,25 +5,19 @@
   </mat-card-header>
 
   <mat-card-content>
-    @if (monthlyComparison) {
     <div class="monthly-content">
-      <div class="bar-chart">
-        @for (month of monthlyComparison.months; track month.month) {
-        <div class="bar-container">
-          <div class="bar-wrapper">
-            <div class="bar" [class.current]="isCurrentMonth(month.month)"
-              [style.height]="getBarHeight(month.consumption)">
-            </div>
-          </div>
-          <span class="bar-label">{{ getMonthTranslation(month.month) }}</span>
+      @if (hasChartData()) {
+        <canvas baseChart
+                [data]="barChartData"
+                [options]="barChartOptions"
+                [type]="barChartType">
+        </canvas>
+      } @else {
+        <div class="no-data">
+          <mat-icon>bar_chart</mat-icon>
+          <p>{{ 'dashboard.charts.noData' | translate }}</p>
         </div>
-        }
-      </div>
+      }
     </div>
-    } @else {
-    <div class="no-data">
-      <p>{{ getTranslation('common.loading') }}</p>
-    </div>
-    }
   </mat-card-content>
 </mat-card>
