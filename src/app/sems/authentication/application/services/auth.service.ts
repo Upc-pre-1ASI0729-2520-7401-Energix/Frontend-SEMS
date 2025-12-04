@@ -98,7 +98,7 @@ export class AuthService {
           userFromResponse.email || username,
           userFromResponse.name || 'User',
           userFromResponse.lastName || '',
-          'USER',
+          userFromResponse.role || 'USER', // Use role from backend
           true,
           new Date(),
           new Date(),
