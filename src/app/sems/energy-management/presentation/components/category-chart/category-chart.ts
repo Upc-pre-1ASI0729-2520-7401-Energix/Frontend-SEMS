@@ -48,10 +48,10 @@ export class CategoryChart implements OnInit, OnChanges {
         display: true,
         position: 'bottom',
         labels: {
-          padding: 16,
+          padding: 15,
           font: {
             size: 13,
-            family: "'Inter', sans-serif"
+            weight: 'bold'
           },
           usePointStyle: true,
           pointStyle: 'circle'
@@ -68,6 +68,7 @@ export class CategoryChart implements OnInit, OnChanges {
         bodyFont: {
           size: 13
         },
+        displayColors: true,
         callbacks: {
           label: (context) => {
             const label = context.label || '';
