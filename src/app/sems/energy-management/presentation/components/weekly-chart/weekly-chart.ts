@@ -100,22 +100,44 @@ export class WeeklyChart implements OnInit {
 
   private getDayAbbreviation(dayName: string): string {
     const dayAbbreviations: { [key: string]: string } = {
+      // Spanish day names
       'lunes': 'MON',
-      'martes': 'TUE',
-      'wednesday': 'WED',
+      'martes': 'TUE', 
+      'miércoles': 'WED',
+      'miercoles': 'WED', // without accent
       'jueves': 'THU',
       'viernes': 'FRI',
-      'saturday': 'SAT',
+      'sábado': 'SAT',
+      'sabado': 'SAT', // without accent
       'domingo': 'SUN',
+      // English day names
+      'monday': 'MON',
+      'tuesday': 'TUE',
+      'wednesday': 'WED',
+      'thursday': 'THU',
+      'friday': 'FRI',
+      'saturday': 'SAT',
+      'sunday': 'SUN',
+      // Capitalized versions
       'Monday': 'MON',
       'Tuesday': 'TUE',
       'Wednesday': 'WED',
       'Thursday': 'THU',
       'Friday': 'FRI',
       'Saturday': 'SAT',
-      'Sunday': 'SUN'
+      'Sunday': 'SUN',
+      // Short versions
+      'mon': 'MON',
+      'tue': 'TUE',
+      'wed': 'WED',
+      'thu': 'THU',
+      'fri': 'FRI',
+      'sat': 'SAT',
+      'sun': 'SUN'
     };
-    return dayAbbreviations[dayName] || dayName.substring(0, 3).toUpperCase();
+    
+    console.log('getDayAbbreviation input:', dayName, 'output:', dayAbbreviations[dayName.toLowerCase()] || dayName.substring(0, 3).toUpperCase());
+    return dayAbbreviations[dayName.toLowerCase()] || dayName.substring(0, 3).toUpperCase();
   }
 
   private getDayLabel(day: string): string {
@@ -186,5 +208,18 @@ export class WeeklyChart implements OnInit {
 
   formatTooltip(data: WeeklyData): string {
     return `${data.label}: ${data.consumption} kWh`;
+  }
+
+  getDayTranslation(day: string): string {
+    const translationKey = `reports.weeklyChart.days.${day}`;
+    const translated = this.translate.instant(translationKey);
+    
+    // If translation failed, return the key without the prefix
+    if (translated === translationKey) {
+      console.warn(`Translation missing for key: ${translationKey}, using fallback`);
+      return day; // Fallback to the abbreviation itself
+    }
+    
+    return translated;
   }
 }

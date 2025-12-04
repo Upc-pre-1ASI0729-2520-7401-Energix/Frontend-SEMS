@@ -26,7 +26,7 @@
                [style.opacity]="weeklyAverage > 0 ? 1 : 0"
                [title]="formatTooltip(data)">
           </div>
-          <span class="day-label">{{ ('reports.weeklyChart.days.' + data.day) | translate }}</span>
+          <span class="day-label">{{ getDayTranslation(data.day) }}</span>
         </div>
       </div>
     </div>
