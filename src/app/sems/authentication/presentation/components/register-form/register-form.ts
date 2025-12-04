@@ -61,7 +61,7 @@ export class RegisterForm implements OnInit, OnDestroy {
     private readonly authController: AuthControllerService,
     private readonly translate: TranslateService,
     private readonly router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -95,25 +95,25 @@ export class RegisterForm implements OnInit, OnDestroy {
     const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
 
     const valid = hasNumber && hasUpper && hasLower && password.length >= 8;
-    
+
     if (!valid) {
       return { strongPassword: true };
     }
-    
+
     return null;
   }
 
   private phoneValidator(control: AbstractControl): ValidationErrors | null {
     const phone = control.value;
     if (!phone) return null;
-    
-    // Validar formato de teléfono peruano (+51 seguido de 9 dígitos)
+
+    // Validate Peruvian phone format (+51 followed by 9 digits)
     const phonePattern = /^\+51\s?[0-9]{9}$/;
-    
+
     if (!phonePattern.test(phone)) {
       return { phone: true };
     }
-    
+
     return null;
   }
 
@@ -146,7 +146,7 @@ export class RegisterForm implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(state => {
         this.authState = state;
-        
+
         if (state.error) {
           this.onRegisterError.emit(
             this.translate.instant(state.error) || 'Error en el registro. Intenta nuevamente.'
@@ -190,38 +190,38 @@ export class RegisterForm implements OnInit, OnDestroy {
 
   getErrorMessage(fieldName: string): string {
     const control = this.registerForm.get(fieldName);
-    
+
     if (control?.errors && control.touched) {
       if (control.errors['required']) {
         return this.translate.instant(`auth.register.errors.${fieldName}.required`) || `${fieldName} es requerido`;
       }
-      
+
       if (control.errors['email']) {
-        return this.translate.instant('auth.register.errors.email.invalid') || 'Email inválido';
+        return this.translate.instant('auth.register.errors.email.invalid') || 'Invalid Email';
       }
-      
+
       if (control.errors['minlength']) {
         const requiredLength = control.errors['minlength'].requiredLength;
-        return this.translate.instant(`auth.register.errors.${fieldName}.minlength`) || 
-               `Mínimo ${requiredLength} caracteres`;
+        return this.translate.instant(`auth.register.errors.${fieldName}.minlength`) ||
+          `Minimum ${requiredLength} characters`;
       }
-      
+
       if (control.errors['strongPassword']) {
-        return this.translate.instant('auth.register.errors.password.weak') || 
-               'La contraseña debe tener al menos 8 caracteres, mayúsculas, minúsculas y números';
+        return this.translate.instant('auth.register.errors.password.weak') ||
+          'Password must have at least 8 characters, uppercase, lowercase and numbers';
       }
-      
+
       if (control.errors['passwordMismatch']) {
-        return this.translate.instant('auth.register.errors.confirmPassword.mismatch') || 
-               'Las contraseñas no coinciden';
+        return this.translate.instant('auth.register.errors.confirmPassword.mismatch') ||
+          'Passwords do not match';
       }
-      
+
       if (control.errors['phone']) {
-        return this.translate.instant('auth.register.errors.phone.invalid') || 
-               'Formato: +51 seguido de 9 dígitos';
+        return this.translate.instant('auth.register.errors.phone.invalid') ||
+          'Format: +51 followed by 9 digits';
       }
     }
-    
+
     return '';
   }
 
