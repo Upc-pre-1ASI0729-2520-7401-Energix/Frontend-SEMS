@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { Subject, filter, takeUntil } from 'rxjs';
+import { Subject, filter, takeUntil, interval } from 'rxjs';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { StatsCard } from '../../components/stats-card/stats-card';
 import { DailyChart } from '../../components/daily-chart/daily-chart';
@@ -62,6 +62,14 @@ export class Home implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     this.loadDashboardData();
+
+    // Setup auto-refresh every 30 seconds
+    interval(30000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('🔄 Auto-refreshing dashboard data...');
+        this.loadBackendData();
+      });
 
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
@@ -132,8 +140,14 @@ export class Home implements OnInit, OnDestroy {
     console.log('Loading unified dashboard data from backend...');
 
     this.dashboardService.loadUnifiedDashboard().subscribe({
-      next: () => {
+      next: (data) => {
         console.log('Unified dashboard data loaded successfully');
+
+        // Update alerts from unified response
+        if (data.alerts) {
+          this.alerts = data.alerts;
+          console.log('✅ Alerts loaded from unified dashboard:', this.alerts);
+        }
 
         this.dashboardService.getDashboardState().subscribe(state => {
           if (state.stats) {
@@ -153,24 +167,8 @@ export class Home implements OnInit, OnDestroy {
 
           if (state.devices) {
             this.devices = state.devices || [];
-            console.log('✅ Devices loaded:', this.devices.length);
+            console.log('✅ Devices loaded from unified dashboard:', this.devices.length);
             this.updateChartData();
-          }
-        });
-
-        console.log('Loading devices from /api/v1/devices endpoint...');
-        this.dashboardService.loadDevices().subscribe({
-          next: (devices: Device[]) => {
-            console.log('✅ Devices from API:', devices.length);
-
-            if (this.devices.length === 0 && devices.length > 0) {
-              this.devices = devices;
-              console.log('📱 Setting devices from API:', devices);
-              this.updateChartData();
-            }
-          },
-          error: (error: any) => {
-            console.error('❌ Error loading devices:', error);
           }
         });
       },
@@ -178,6 +176,7 @@ export class Home implements OnInit, OnDestroy {
         console.error('❌ Error loading dashboard:', error);
         this.dashboardStats = new DashboardStats(0, 0, 0, 0, 0, 'S/.');
         this.devices = [];
+        this.alerts = [];
 
         setTimeout(() => {
           this.isLoading = false;
@@ -186,172 +185,47 @@ export class Home implements OnInit, OnDestroy {
       }
     });
 
-    this.loadAlerts();
     this.isLoading = false;
   }
 
-  private loadAlerts(): void {
-    this.dashboardService.loadAlerts().subscribe({
-      next: (alerts: any[]) => {
-        this.alerts = alerts || [];
-        console.log('Alerts loaded:', this.alerts);
-      },
-      error: (error: any) => {
-        console.error('Error loading alerts:', error);
-        this.alerts = [];
-      }
-    });
-  }
-
   getCalculatedEnergyConsumption(): string {
-    console.log('📊 Calculating total energy consumption');
-
-    if (!this.hasDevices) {
-      console.log('⚠️ No devices found');
-      const unit = this.translate.instant('dashboard.units.kwh');
-      return `21.5 ${unit}`;
-    }
-
-    const totalConsumption = this.devices.reduce((total, device) => {
-      let deviceConsumption = 0;
-
-      if (device.energyConsumptionValue && device.energyConsumptionValue > 0) {
-        deviceConsumption = device.energyConsumptionValue;
-      } else if (device.energyConsumption) {
-        const match = device.energyConsumption.match(/(\d+\.?\d*)/);
-        deviceConsumption = match ? parseFloat(match[1]) : 0;
-      } else {
-        deviceConsumption = this.getEstimatedConsumption(device);
-      }
-
-      return total + deviceConsumption;
-    }, 0);
-
-    console.log('✅ Total weekly consumption:', totalConsumption, 'kWh');
+    console.log('📊 Getting energy consumption from API:', this.dashboardStats.energyConsumption);
     const unit = this.translate.instant('dashboard.units.kwh');
-    return totalConsumption > 0 ? `${totalConsumption.toFixed(1)} ${unit}` : `21.5 ${unit}`;
+    return `${this.dashboardStats.energyConsumption.toFixed(1)} ${unit}`;
   }
 
   getCalculatedTodayConsumption(): string {
-    console.log('📅 Calculating today consumption');
-
-    if (!this.hasDevices) {
-      const unit = this.translate.instant('dashboard.units.kwh');
-      return `3.07 ${unit}`;
-    }
-
-    const todayConsumption = this.devices.reduce((total, device) => {
-      let deviceConsumption = 0;
-
-      if (device.energyConsumptionValue && device.energyConsumptionValue > 0) {
-        deviceConsumption = device.energyConsumptionValue / 7; // Convertir semanal a diario
-      } else if (device.energyConsumption) {
-        const match = device.energyConsumption.match(/(\d+\.?\d*)/);
-        deviceConsumption = match ? parseFloat(match[1]) / 7 : 0;
-      } else {
-        deviceConsumption = this.getEstimatedConsumption(device) / 7;
-      }
-
-      return total + deviceConsumption;
-    }, 0);
-
-    console.log('✅ Today consumption:', todayConsumption, 'kWh');
+    console.log('📅 Getting today consumption from API:', this.dashboardStats.todayConsumption);
     const unit = this.translate.instant('dashboard.units.kwh');
-    return todayConsumption > 0 ? `${todayConsumption.toFixed(2)} ${unit}` : `3.07 ${unit}`;
+    return `${this.dashboardStats.todayConsumption.toFixed(2)} ${unit}`;
   }
 
   getCalculatedEstimatedBill(): string {
-    console.log('💰 Calculating estimated monthly bill');
-
-    if (!this.hasDevices) {
-      const currency = this.translate.instant('dashboard.units.currency');
-      return `${currency} 35.20`;
-    }
-
-    const weeklyConsumption = this.devices.reduce((total, device) => {
-      let deviceConsumption = 0;
-
-      if (device.energyConsumptionValue && device.energyConsumptionValue > 0) {
-        deviceConsumption = device.energyConsumptionValue;
-      } else if (device.energyConsumption) {
-        const match = device.energyConsumption.match(/(\d+\.?\d*)/);
-        deviceConsumption = match ? parseFloat(match[1]) : 0;
-      } else {
-        deviceConsumption = this.getEstimatedConsumption(device);
-      }
-
-      return total + deviceConsumption;
-    }, 0);
-
-    const monthlyConsumption = weeklyConsumption * 4.33;
-
-    let estimatedBill = 0;
-    if (monthlyConsumption <= 100) {
-      estimatedBill = monthlyConsumption * 0.4087;
-    } else if (monthlyConsumption <= 200) {
-      estimatedBill = 100 * 0.4087 + (monthlyConsumption - 100) * 0.5073;
-    } else {
-      estimatedBill = 100 * 0.4087 + 100 * 0.5073 + (monthlyConsumption - 200) * 0.6208;
-    }
-
-    console.log('✅ Estimated monthly bill:', estimatedBill, 'PEN');
+    console.log('💰 Getting estimated bill from API:', this.dashboardStats.estimatedBill);
     const currency = this.translate.instant('dashboard.units.currency');
-    return estimatedBill > 0 ? `${currency} ${estimatedBill.toFixed(2)}` : `${currency} 35.20`;
+    return `${currency} ${this.dashboardStats.estimatedBill.toFixed(2)}`;
   }
 
   getCalculatedActiveDevices(): string {
-    console.log('🔌 Calculating active devices for user');
-
-    if (!this.hasDevices) {
-      console.log('⚠️ No devices found for user');
-      return `0 ${this.translate.instant('dashboard.stats.active')} / 3 ${this.devicesLabel}`;
-    }
-
-    const activeDevicesCount = this.devices.filter(device => device.isActive).length;
-    const totalDevicesCount = this.devices.length;
-
-    console.log('🔌 Active devices count:', activeDevicesCount, '/ Total:', totalDevicesCount);
-
-    return `${activeDevicesCount} ${this.translate.instant('dashboard.stats.active')} / ${totalDevicesCount} ${this.devicesLabel}`;
+    console.log('🔌 Getting active devices from API:', this.dashboardStats.activeDevices);
+    const totalDevicesCount = this.devices.length || this.dashboardStats.activeDevices;
+    return `${this.dashboardStats.activeDevices} ${this.translate.instant('dashboard.stats.active')} / ${totalDevicesCount} ${this.devicesLabel}`;
   }
 
   getCalculatedSavings(): string {
-    console.log('💡 Calculating savings');
-
-    if (!this.hasDevices) {
-      const percentSymbol = this.translate.instant('dashboard.units.percentage');
-      return `5${percentSymbol} ${this.translate.instant('dashboard.stats.saved')}`;
-    }
-
-    const totalConsumption = this.devices.reduce((total, device) => {
-      if (device.energyConsumptionValue) {
-        return total + device.energyConsumptionValue;
-      } else if (device.energyConsumption) {
-        const match = device.energyConsumption.match(/(\d+\.?\d*)/);
-        const value = match ? parseFloat(match[1]) : 0;
-        return total + value;
-      }
-      return total;
-    }, 0);
-
-    const efficientDevices = this.devices.filter(device =>
-      device.category === 'Electronics' || device.status === DeviceStatus.STANDBY
-    ).length;
-
-    const savingsPercentage = totalConsumption > 0 ?
-      Math.round((efficientDevices / this.devices.length) * 20 - 10) : 5;
-
+    console.log('💡 Getting savings from API:', this.dashboardStats.estimatedSavings);
     const percentSymbol = this.translate.instant('dashboard.units.percentage');
-
-    if (savingsPercentage < 0) {
-      return `${Math.abs(savingsPercentage)}${percentSymbol} ${this.translate.instant('dashboard.stats.extraConsumption')}`;
+    const savingsValue = this.dashboardStats.estimatedSavings;
+    
+    if (savingsValue < 0) {
+      return `${Math.abs(savingsValue)}${percentSymbol} ${this.translate.instant('dashboard.stats.extraConsumption')}`;
     }
-
-    if (savingsPercentage === 0) {
+    
+    if (savingsValue === 0) {
       return this.translate.instant('dashboard.stats.noSavings');
     }
-
-    return `${savingsPercentage}${percentSymbol} ${this.translate.instant('dashboard.stats.saved')}`;
+    
+    return `${savingsValue}${percentSymbol} ${this.translate.instant('dashboard.stats.saved')}`;
   }
 
   private getEstimatedConsumption(device: Device): number {

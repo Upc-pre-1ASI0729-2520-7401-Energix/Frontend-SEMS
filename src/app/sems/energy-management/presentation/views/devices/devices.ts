@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Device } from '../../../domain/model/device.entity';
+import { DashboardService } from '../../../application/services/dashboard.service';
 import { DevicesService } from '../../../application/services/devices.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class Devices implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
+    private readonly dashboardService: DashboardService,
     private readonly devicesService: DevicesService,
     private readonly translateService: TranslateService,
     private readonly router: Router,
@@ -40,16 +42,22 @@ export class Devices implements OnInit, OnDestroy {
 
   private loadDevices(): void {
     this.loading = true;
-    this.devicesService.getAllDevices()
+    // Cargar el dashboard unificado que incluye los dispositivos filtrados por usuario
+    this.dashboardService.loadUnifiedDashboard()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (devices) => {
-          console.log('Devices loaded from backend:', devices);
-          setTimeout(() => {
-            this.devices = devices;
-            this.loading = false;
-            this.cdr.detectChanges();
-          }, 50);
+        next: () => {
+          // Obtener los dispositivos del estado del dashboard
+          this.dashboardService.getDashboardState()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(state => {
+              console.log('Devices loaded from unified dashboard:', state.devices);
+              setTimeout(() => {
+                this.devices = state.devices || [];
+                this.loading = false;
+                this.cdr.detectChanges();
+              }, 50);
+            });
         },
         error: (error) => {
           console.error('Error loading devices:', error);
@@ -166,7 +174,7 @@ export class Devices implements OnInit, OnDestroy {
       this.devicesService.deleteDevice(deviceId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (success) => {
+          next: (success: boolean) => {
             if (success) {
               // Reload the devices list
               this.loadDevices();
