@@ -87,6 +87,7 @@ export class AuthService {
         // Extract user data from response.user object
         const userFromResponse = response.user;
         console.log('AuthService - User object from response:', userFromResponse);
+        console.log('AuthService - Role from backend:', userFromResponse?.role);
 
         if (!userFromResponse) {
           throw new Error('No user data received from server');
@@ -109,6 +110,7 @@ export class AuthService {
         );
 
         console.log('AuthService - Created user object:', user);
+        console.log('AuthService - User role set to:', user.role);
 
         // Save user
         this.tokenService.saveUser(user);
