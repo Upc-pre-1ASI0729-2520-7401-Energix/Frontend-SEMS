@@ -24,6 +24,7 @@ interface PreferenceGroup {
   styleUrl: './device-preferences.css'
 })
 export class DevicePreferences implements OnInit, OnDestroy {
+
   devicePreferences: DevicePreference | null = null;
   originalPreferences: DevicePreference | null = null;
   loading = true;
@@ -34,6 +35,7 @@ export class DevicePreferences implements OnInit, OnDestroy {
   hasUnsavedChanges = false;
 
   private destroy$ = new Subject<void>();
+  private readonly currentUserId = '1'; // ID numérico esperado por la API
 
   // Group structure only
   private readonly groupStructure = [
@@ -75,11 +77,13 @@ export class DevicePreferences implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    this.devicePreferenceService.getDevicePreferences('user1')
+    this.devicePreferenceService.getDevicePreferences(this.currentUserId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (preferences) => {
-          console.log('Loaded preferences from DB:', preferences);
+
+          // Asegurar userId correcto
+          preferences.userId = this.currentUserId;
 
           this.devicePreferences = preferences;
           this.originalPreferences = JSON.parse(JSON.stringify(preferences));
@@ -103,13 +107,14 @@ export class DevicePreferences implements OnInit, OnDestroy {
 
     this.preferenceGroups = this.groupStructure.map(group => ({
       title: group.title,
-      preferences: group.keys.map(key => ({
-        key: key,
-        enabled: this.devicePreferences!.preferences[key as keyof PreferenceSettings] || false
-      }))
+      preferences: group.keys.map(key => {
+        const value = this.devicePreferences!.preferences[key as keyof PreferenceSettings];
+        return {
+          key: key,
+          enabled: value ?? false
+        };
+      })
     }));
-
-    console.log('Built preference groups from DB data:', this.preferenceGroups);
   }
 
   onPreferenceChange(key: string, enabled: boolean): void {
@@ -156,8 +161,9 @@ export class DevicePreferences implements OnInit, OnDestroy {
     // Get defaults (all false)
     const defaults = this.devicePreferenceService.resetToDefaults();
 
-    const updatedPreferences = {
+    const updatedPreferences: DevicePreference = {
       ...this.devicePreferences,
+      userId: this.currentUserId, // Asegurar userId correcto
       preferences: defaults,
       lastUpdated: new Date().toISOString()
     };
@@ -167,7 +173,6 @@ export class DevicePreferences implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (saved) => {
-          console.log('Reset to defaults saved:', saved);
           this.devicePreferences = saved;
           this.originalPreferences = JSON.parse(JSON.stringify(saved));
           this.buildPreferenceGroupsFromData();
@@ -187,18 +192,18 @@ export class DevicePreferences implements OnInit, OnDestroy {
   onSavePreferences(): void {
     if (!this.devicePreferences) return;
 
+    // Asegurar userId correcto antes de enviar
+    this.devicePreferences.userId = this.currentUserId;
+
     this.saving = true;
     this.saveSuccess = false;
     this.error = null;
     this.cdr.detectChanges();
 
-    console.log('Saving preferences:', this.devicePreferences);
-
     this.devicePreferenceService.updateDevicePreferences(this.devicePreferences)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (updated) => {
-          console.log('Preferences saved successfully:', updated);
 
           this.devicePreferences = updated;
           this.originalPreferences = JSON.parse(JSON.stringify(updated));
