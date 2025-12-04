@@ -9,73 +9,83 @@ import { SettingsRequest } from '../request/settings.request';
 })
 export class SettingsAssembler {
   toResource(dto: any): SettingsResource {
-    // Handle flat structure from backend (matching user_settings table)
-    // The backend likely returns a flat JSON object now
-
     return {
       id: dto.id,
-      userId: dto.userId || dto.user_id,
-      autoSavingMode: {
-        turnOffPatio: dto.turnOffPatio ?? dto.turn_off_patio ?? dto.autoSavingMode?.turnOffPatio,
-        turnOffDevices: dto.turnOffDevices ?? dto.turn_off_devices ?? dto.autoSavingMode?.turnOffDevices,
-        unplugWeekdays: dto.unplugWeekdays ?? dto.unplug_weekdays ?? dto.autoSavingMode?.unplugWeekdays,
-        runDishwasher: dto.runDishwasher ?? dto.run_dishwasher ?? dto.autoSavingMode?.runDishwasher
-      },
-      notifications: {
-        highConsumption: dto.highConsumption ?? dto.high_consumption_alerts ?? dto.high_consumption ?? dto.notifications?.highConsumption,
-        summary: dto.summary ?? dto.daily_weekly_summary ?? dto.daily_weekly ?? dto.notifications?.summary,
-        scheduleStart: dto.scheduleStart ?? dto.notification_schedule_start ?? dto.schedule_start ?? dto.notifications?.scheduleStart,
-        scheduleEnd: dto.scheduleEnd ?? dto.notification_schedule_end ?? dto.schedule_end ?? dto.notifications?.scheduleEnd
-      },
-      reportFrequencies: dto.reportFrequencies || dto.report_frequencies || [],
-      reportFormats: dto.reportFormats || dto.report_formats || [],
-      twoFactorEnabled: dto.twoFactorEnabled ?? dto.two_factor_enabled,
-      createdAt: new Date(dto.createdAt || dto.created_at || Date.now()),
-      updatedAt: new Date(dto.updatedAt || dto.updated_at || Date.now()),
-      rules: (dto.savingRules || dto.saving_rules)?.map((r: any) => ({
+      userId: dto.userId,
+      notificationsEnabled: dto.notificationsEnabled ?? true,
+      highConsumptionAlerts: dto.highConsumptionAlerts ?? true,
+      dailyWeeklySummary: dto.dailyWeeklySummary ?? true,
+      notificationScheduleStart: this.formatTimeFromDB(dto.notificationScheduleStart) ?? "09:00",
+      notificationScheduleEnd: this.formatTimeFromDB(dto.notificationScheduleEnd) ?? "18:00",
+      reportDaily: dto.reportDaily ?? false,
+      reportWeekly: dto.reportWeekly ?? true,
+      reportMonthly: dto.reportMonthly ?? false,
+      reportFormatPdf: dto.reportFormatPdf ?? true,
+      reportFormatCsv: dto.reportFormatCsv ?? false,
+      twoFactorEnabled: dto.twoFactorEnabled ?? false,
+      lastPasswordChange: dto.lastPasswordChange ?? new Date().toISOString(),
+      savingRules: dto.savingRules?.map((r: any) => ({
         id: r.id,
         name: r.name,
-        isEnabled: r.isEnabled ?? r.is_enabled
-      }))
+        isEnabled: r.isEnabled
+      })) || []
     };
   }
 
-  toRequest(resource: Partial<SettingsResource>): any {
-    // Flatten the structure to match the user_settings table columns directly
+  toRequest(resource: Partial<SettingsResource>): SettingsRequest {
     return {
       id: resource.id,
-      user_id: resource.userId,
-
-      // Auto Saving Mode columns
-      turn_off_patio: resource.autoSavingMode?.turnOffPatio,
-      turn_off_devices: resource.autoSavingMode?.turnOffDevices,
-      unplug_weekdays: resource.autoSavingMode?.unplugWeekdays,
-      run_dishwasher: resource.autoSavingMode?.runDishwasher,
-
-      // Notifications columns
-      high_consumption_alerts: resource.notifications?.highConsumption,
-      daily_weekly_summary: resource.notifications?.summary,
-      notification_schedule_start: resource.notifications?.scheduleStart,
-      notification_schedule_end: resource.notifications?.scheduleEnd,
-
-      // Also map legacy/alternative names just in case
-      notifications_enabled: true, // Assuming enabled if settings exist
-      high_consumption: resource.notifications?.highConsumption,
-      summary: resource.notifications?.summary,
-      schedule_start: resource.notifications?.scheduleStart,
-      schedule_end: resource.notifications?.scheduleEnd,
-
-      // Other columns
-      report_frequencies: resource.reportFrequencies,
-      report_formats: resource.reportFormats,
-      two_factor_enabled: resource.twoFactorEnabled,
-
-      // Keep nested rules as they are likely a separate table/relation
-      savingRules: resource.rules?.map(r => ({
+      userId: resource.userId,
+      notificationsEnabled: resource.notificationsEnabled,
+      highConsumptionAlerts: resource.highConsumptionAlerts,
+      dailyWeeklySummary: resource.dailyWeeklySummary,
+      notificationScheduleStart: this.formatTimeForDB(resource.notificationScheduleStart),
+      notificationScheduleEnd: this.formatTimeForDB(resource.notificationScheduleEnd),
+      reportDaily: resource.reportDaily,
+      reportWeekly: resource.reportWeekly,
+      reportMonthly: resource.reportMonthly,
+      reportFormatPdf: resource.reportFormatPdf,
+      reportFormatCsv: resource.reportFormatCsv,
+      twoFactorEnabled: resource.twoFactorEnabled,
+      lastPasswordChange: resource.lastPasswordChange,
+      savingRules: resource.savingRules?.map(r => ({
         id: r.id,
         name: r.name,
         isEnabled: r.isEnabled
       }))
     };
+  }
+
+  /**
+   * Convierte tiempo de base de datos (HH:MM:SS.SSSSSS) a formato UI (HH:MM)
+   */
+  private formatTimeFromDB(timeValue: string | null): string | null {
+    if (!timeValue) return null;
+    
+    // Si ya está en formato HH:MM, devolverlo tal como está
+    if (/^\d{2}:\d{2}$/.test(timeValue)) {
+      return timeValue;
+    }
+    
+    // Si está en formato HH:MM:SS.SSSSSS, extraer solo HH:MM
+    if (/^\d{2}:\d{2}:\d{2}/.test(timeValue)) {
+      return timeValue.substring(0, 5);
+    }
+    
+    return timeValue;
+  }
+
+  /**
+   * Convierte tiempo de UI (HH:MM) a formato para base de datos
+   */
+  private formatTimeForDB(timeValue: string | undefined): string | undefined {
+    if (!timeValue) return undefined;
+    
+    // Si ya está en formato correcto (HH:MM), devolverlo tal como está
+    if (/^\d{2}:\d{2}$/.test(timeValue)) {
+      return timeValue;
+    }
+    
+    return timeValue;
   }
 }

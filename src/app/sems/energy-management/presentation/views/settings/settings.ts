@@ -95,7 +95,7 @@ export class Settings implements OnInit, OnDestroy {
 
     // Check if store already has settings for this user to preserve optimistic updates
     const cachedSettings = this.settingsStore.currentSettings;
-    if (cachedSettings && cachedSettings.userId === this.currentUserId) {
+    if (cachedSettings && cachedSettings.userId.toString() === this.currentUserId) {
       console.log('Using cached settings from store for user:', this.currentUserId);
       // Force change detection to ensure UI reflects store state immediately
       this.cdr.detectChanges();
@@ -109,18 +109,18 @@ export class Settings implements OnInit, OnDestroy {
       .subscribe({
         next: (settings) => {
           console.log('Settings loaded:', settings);
-          if (settings.rules) {
-            this.rules = settings.rules;
+          if (settings.savingRules) {
+            this.rules = settings.savingRules;
           }
           this.cdr.detectChanges(); // Force change detection
         },
         error: (error) => {
           console.error('Failed to load settings:', error);
-          if (error.status === 404) {
-            this.showError('Settings not found for this user.');
-          } else if (error.status === 401) {
+          // Solo mostrar error si no es un 404 (que se maneja automáticamente creando defaults)
+          if (error.status === 401) {
             this.showError('Unauthorized. Please log in again.');
-          } else {
+          } else if (error.status !== 404) {
+            // 404 se maneja automáticamente en el servicio creando settings por defecto
             this.showError(`Failed to load settings: ${error.message || 'Unknown error'}`);
           }
           this.cdr.detectChanges(); // Force change detection on error too
@@ -128,38 +128,17 @@ export class Settings implements OnInit, OnDestroy {
       });
   }
 
-  onAutoSavingModeChange(field: string, value: boolean): void {
-    console.log('onAutoSavingModeChange:', field, '=', value);
-
-    if (!this.editableSettings.autoSavingMode) {
-      this.editableSettings.autoSavingMode = {
-        turnOffPatio: false,
-        turnOffDevices: false,
-        unplugWeekdays: false,
-        runDishwasher: false
-      };
-    }
-
-    (this.editableSettings.autoSavingMode as any)[field] = value;
-    this.hasChanges = true;
-
-    console.log('hasChanges:', this.hasChanges);
-    console.log('editableSettings:', this.editableSettings);
-  }
-
-  onNotificationChange(field: string, value: boolean | string): void {
+  onNotificationChange(field: string, value: boolean): void {
     console.log('onNotificationChange:', field, '=', value);
 
-    if (!this.editableSettings.notifications) {
-      this.editableSettings.notifications = {
-        highConsumption: false,
-        summary: false,
-        scheduleStart: '05:00 AM',
-        scheduleEnd: '22:00 PM'
-      };
-    }
+    // Mapear campos antiguos a nuevos
+    const fieldMapping: { [key: string]: keyof SettingsResource } = {
+      'highConsumption': 'highConsumptionAlerts',
+      'summary': 'dailyWeeklySummary'
+    };
 
-    (this.editableSettings.notifications as any)[field] = value;
+    const actualField = fieldMapping[field] || field;
+    (this.editableSettings as any)[actualField] = value;
     this.hasChanges = true;
 
     console.log('hasChanges:', this.hasChanges);
@@ -200,7 +179,7 @@ export class Settings implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           console.log('Rule deleted');
-          this.rules = this.rules.filter(r => r.id !== ruleId);
+          this.rules = this.rules.filter(r => r.id.toString() !== ruleId);
           this.showSuccess('Rule deleted successfully');
         },
         error: (err) => {
@@ -214,7 +193,7 @@ export class Settings implements OnInit, OnDestroy {
     console.log('Toggle rule:', rule.id, !rule.isEnabled);
     const updatedRule = { ...rule, isEnabled: !rule.isEnabled };
 
-    this.settingsService.updateRule(rule.id, updatedRule)
+    this.settingsService.updateRule(rule.id.toString(), updatedRule)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
@@ -237,8 +216,8 @@ export class Settings implements OnInit, OnDestroy {
   onEditSchedule(): void {
     console.log('Edit schedule clicked');
 
-    const currentStart = this.editableSettings.notifications?.scheduleStart || '05:00 AM';
-    const currentEnd = this.editableSettings.notifications?.scheduleEnd || '22:00 PM';
+    const currentStart = this.editableSettings.notificationScheduleStart || '05:00';
+    const currentEnd = this.editableSettings.notificationScheduleEnd || '22:00';
     const currentRange = `${currentStart} - ${currentEnd}`;
 
     const newRange = window.prompt(this.t('Enter schedule (Start - End):'), currentRange);
@@ -248,24 +227,21 @@ export class Settings implements OnInit, OnDestroy {
     const parts = newRange.split('-').map(p => p.trim());
 
     if (parts.length !== 2) {
-      this.showError('Invalid format. Please use "Start - End" (e.g. 05:00 AM - 22:00 PM)');
+      this.showError('Invalid format. Please use "Start - End" (e.g. 05:00 - 22:00)');
       return;
     }
 
     const newStart = parts[0];
     const newEnd = parts[1];
 
-    if (!this.editableSettings.notifications) {
-      this.editableSettings.notifications = {
-        highConsumption: false,
-        summary: false,
-        scheduleStart: newStart,
-        scheduleEnd: newEnd
-      };
-    } else {
-      this.editableSettings.notifications.scheduleStart = newStart;
-      this.editableSettings.notifications.scheduleEnd = newEnd;
+    // Validar formato HH:MM
+    if (!/^\d{2}:\d{2}$/.test(newStart) || !/^\d{2}:\d{2}$/.test(newEnd)) {
+      this.showError('Invalid time format. Please use HH:MM format (e.g. 09:00)');
+      return;
     }
+
+    this.editableSettings.notificationScheduleStart = newStart;
+    this.editableSettings.notificationScheduleEnd = newEnd;
 
     this.hasChanges = true;
     this.showSuccess('Schedule updated. Don\'t forget to save!');

@@ -63,4 +63,5 @@ export class SettingsService {
   enableTwoFactor(userId: string): Observable<{ qrCode: string; secret: string }> {
     return this.repo.enableTwoFactor(userId);
   }
+
 }

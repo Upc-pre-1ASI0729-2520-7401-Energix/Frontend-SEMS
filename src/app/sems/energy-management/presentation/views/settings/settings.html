@@ -14,7 +14,7 @@
             <mat-checkbox [checked]="rule.isEnabled" (change)="onToggleRule(rule)">
               {{ rule.name }}
             </mat-checkbox>
-            <button mat-icon-button color="warn" (click)="onDeleteRule(rule.id)">
+            <button mat-icon-button color="warn" (click)="onDeleteRule(rule.id.toString())">
               <span class="material-icons">delete</span>
             </button>
           </div>
@@ -28,12 +28,12 @@
       <div class="card">
         <h2>{{ t('settings.notifications.title') }}</h2>
         <div class="toggles">
-          <mat-checkbox [checked]="editableSettings.notifications?.highConsumption"
+          <mat-checkbox [checked]="editableSettings.highConsumptionAlerts"
             (change)="onNotificationChange('highConsumption', $event.checked)">
             {{ t('settings.notifications.highConsumption') }}
           </mat-checkbox>
 
-          <mat-checkbox [checked]="editableSettings.notifications?.summary"
+          <mat-checkbox [checked]="editableSettings.dailyWeeklySummary"
             (change)="onNotificationChange('summary', $event.checked)">
             {{ t('settings.notifications.summary') }}
           </mat-checkbox>
@@ -41,8 +41,8 @@
 
         <p class="schedule">
           {{ t('settings.notifications.schedule', {
-          start: editableSettings.notifications?.scheduleStart || '05:00 AM',
-          end: editableSettings.notifications?.scheduleEnd || '22:00 PM'
+          start: editableSettings.notificationScheduleStart || '09:00',
+          end: editableSettings.notificationScheduleEnd || '18:00'
           }) }}
           <button mat-stroked-button color="accent" class="edit-btn" (click)="onEditSchedule()">
             {{ t('settings.notifications.edit') }}
