@@ -70,7 +70,8 @@ export class NotificationService {
           const title = item.title ?? item.subject ?? '';
 
           return {
-            id: id != null ? Number(id) : 0,
+            // cambio pa retornar bien el uuid para la carga de notifications que estaba bugea
+            id: id != null ? (typeof id === 'string' && /^\d+$/.test(id) ? Number(id) : id) : 0,
             title,
             message,
             type,
@@ -135,6 +136,8 @@ export class NotificationService {
 
 
   markAsRead(notification: NotificationEntity): Observable<NotificationEntity> {
-    return this.http.put<NotificationEntity>(`${this.apiUrl}/${notification.id}/read`, {}, { headers: this.getHeaders() });
+    // Ensure IDs with special characters (UUIDs) are safely encoded into the URL
+    const idStr = encodeURIComponent(String((notification as any).id));
+    return this.http.put<NotificationEntity>(`${this.apiUrl}/${idStr}/read`, {}, { headers: this.getHeaders() });
   }
 }
