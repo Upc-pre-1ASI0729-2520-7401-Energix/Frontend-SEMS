@@ -85,65 +85,49 @@ export class DashboardAssembler {
 
   static toDevicesFromUnified(response: UnifiedDashboardResponse): Device[] {
     console.log('Raw devices from API:', JSON.stringify(response.devices, null, 2));
-    console.log('Response type:', typeof response.devices);
-    console.log('First device keys:', response.devices[0] ? Object.keys(response.devices[0]) : 'No devices');
 
     if (!response.devices || response.devices.length === 0) {
       console.log('No devices in response');
       return [];
     }
 
-    const mappedDevices = response.devices
-      .map((device: any) => {
-        console.log('Processing device RAW:', JSON.stringify(device, null, 2));
-        console.log('All device keys:', Object.keys(device));
-        console.log('Device fields:', {
-          id: device.id,
-          nombre: device.nombre,
-          categoria: device.categoria,
-          tipo: device.tipo,
-          estado: device.estado,
-          ubicacion: device.ubicacion,
-          ultimaActividad: device.ultimaActividad,
-          activo: device.activo
-        });
+    const mappedDevices = response.devices.map((device) => {
+      // Extraer el nombre del dispositivo del formato "DeviceName[name=TV]"
+      let deviceName = device.name;
+      const nameMatch = device.name.match(/DeviceName\[name=(.+?)\]/);
+      if (nameMatch) {
+        deviceName = nameMatch[1];
+      }
 
-        // Mapear usando cualquier nombre de campo que venga
-        const deviceId = device.id || device.deviceId || device.Id;
-        const deviceName = device.nombre || device.name || device.deviceName || `Device ${deviceId}`;
-        const deviceCategory = device.categoria || device.category || 'Electrodomestico';
-        const deviceType = device.tipo || device.type || 'Unknown';
-        const deviceStatus = device.estado || device.status || 'Apagado';
-        const deviceLocation = device.ubicacion || device.location || 'Sin ubicación';
-        const deviceLastActive = device.ultimaActividad || device.lastActive || device.lastActivity || 'NOW';
-        const deviceActive = device.activo !== undefined ? device.activo : (device.isActive !== undefined ? device.isActive : 1);
+      // Extraer la categoría del formato "DeviceCategory[category=Electrodomestico]"
+      let deviceCategory = device.category;
+      const categoryMatch = device.category.match(/DeviceCategory\[category=(.+?)\]/);
+      if (categoryMatch) {
+        deviceCategory = categoryMatch[1];
+      }
 
-        console.log('Mapped device:', {
-          id: deviceId,
-          name: deviceName,
-          category: deviceCategory,
-          type: deviceType,
-          status: deviceStatus,
-          location: deviceLocation
-        });
+      console.log('Mapped device:', {
+        id: device.id,
+        name: deviceName,
+        category: deviceCategory
+      });
 
-        return {
-          id: deviceId?.toString() || '0',
-          name: deviceName,
-          category: deviceCategory,
-          type: deviceType,
-          brand: '',
-          model: '',
-          status: deviceStatus as any,
-          realTimeStatus: deviceStatus,
-          lastActive: deviceLastActive,
-          alertHistory: 'No alerts',
-          energyConsumption: '0 kWh',
-          location: deviceLocation,
-          isActive: deviceActive
-        };
-      })
-      .filter(device => device !== null) as Device[];
+      return {
+        id: device.id.toString(),
+        name: deviceName,
+        category: deviceCategory,
+        type: deviceCategory,
+        brand: '',
+        model: '',
+        status: 'ON' as any,
+        realTimeStatus: 'ON',
+        lastActive: 'NOW',
+        alertHistory: 'No alerts',
+        energyConsumption: '0 kWh',
+        location: 'Home',
+        isActive: 1
+      };
+    });
 
     console.log('Valid devices mapped:', mappedDevices.length);
     return mappedDevices;
@@ -170,19 +154,46 @@ export class DashboardAssembler {
 
   static toConsumptionByCategoryFromUnified(response: UnifiedDashboardResponse): ConsumptionByCategory {
     console.log('Mapping unified dashboard category consumption:', response.categoryConsumption);
-    const categories = response.categoryConsumption.map(cat => ({
-      name: cat.category,
-      value: cat.kwh,
-      percentage: cat.percentage,
-      color: this.getCategoryColor(cat.category)
-    }));
-
-    const totalConsumption = categories.reduce((sum, cat) => sum + cat.value, 0);
+    
+    const totalConsumption = response.categoryConsumption.reduce((sum, cat) => sum + cat.kwh, 0);
+    
+    const categories = response.categoryConsumption.map(cat => {
+      // Extraer el nombre de la categoría del formato "DeviceCategory[category=Electronico]"
+      let categoryName = cat.category;
+      const categoryMatch = cat.category.match(/DeviceCategory\[category=(.+?)\]/);
+      if (categoryMatch) {
+        categoryName = categoryMatch[1];
+      }
+      
+      const percentage = totalConsumption > 0 ? (cat.kwh / totalConsumption) * 100 : 0;
+      
+      return {
+        name: categoryName,
+        value: cat.kwh,
+        percentage: percentage,
+        color: this.getCategoryColor(categoryName)
+      };
+    });
 
     return new ConsumptionByCategory(
       categories,
       totalConsumption
     );
+  }
+
+  static toAlertsFromUnified(response: UnifiedDashboardResponse): any[] {
+    console.log('Mapping unified dashboard alerts:', response.alerts);
+    
+    if (!response.alerts || response.alerts.length === 0) {
+      return [];
+    }
+
+    return response.alerts.map(alert => ({
+      level: alert.level,
+      message: alert.message,
+      type: alert.level === 'warning' ? 'warning' : 'info',
+      timestamp: new Date().toISOString()
+    }));
   }
 
   private static getCategoryColor(category: string): string {
@@ -192,7 +203,9 @@ export class DashboardAssembler {
       'Entertainment': '#FF9800',
       'Kitchen': '#F44336',
       'Office': '#9C27B0',
-      'Other': '#757575'
+      'Other': '#757575',
+      'Electronico': '#2196F3',
+      'Electrodomestico': '#4CAF50'
     };
     return colors[category] || '#757575';
   }

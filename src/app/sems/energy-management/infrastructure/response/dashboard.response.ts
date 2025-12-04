@@ -20,23 +20,15 @@ export interface UnifiedDashboardResponse {
   categoryConsumption: Array<{
     category: string;
     kwh: number;
-    percentage: number;
   }>;
   devices: Array<{
     id: number;
-    nombre: string;
-    categoria: string;
-    tipo: string;
-    estado: string;
-    ubicacion: string;
-    ultimaActividad: string;
-    activo: number;
+    name: string;
+    category: string;
   }>;
   alerts: Array<{
-    id: number;
-    type: string;
+    level: string;
     message: string;
-    timestamp: string;
   }>;
 }
 

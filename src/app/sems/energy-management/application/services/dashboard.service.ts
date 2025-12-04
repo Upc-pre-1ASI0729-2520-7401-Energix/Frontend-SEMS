@@ -17,7 +17,7 @@ export class DashboardService {
     private readonly dashboardStore: DashboardStore
   ) { }
 
-  loadUnifiedDashboard(): Observable<void> {
+  loadUnifiedDashboard(): Observable<{ alerts: any[] }> {
     console.log('Loading unified dashboard data...');
     return this.dashboardRepository.getUnifiedDashboard().pipe(
       tap(data => {
@@ -27,7 +27,7 @@ export class DashboardService {
         this.dashboardStore.setConsumptionByCategory(data.categoryConsumption);
         this.dashboardStore.setDevices(data.devices);
       }),
-      map(() => undefined),
+      map(data => ({ alerts: data.alerts })),
       catchError(error => {
         console.error('Error loading unified dashboard:', error);
         this.dashboardStore.setError(error.message || 'Error loading dashboard');

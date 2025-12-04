@@ -20,6 +20,7 @@ export class DashboardRepositoryImpl implements DashboardRepository {
     dailyConsumption: DailyConsumption;
     categoryConsumption: ConsumptionByCategory;
     devices: Device[];
+    alerts: any[];
   }> {
     return this.dashboardResource
       .getDashboardStats({})
@@ -28,7 +29,8 @@ export class DashboardRepositoryImpl implements DashboardRepository {
           stats: DashboardAssembler.toDashboardStatsFromUnified(response),
           dailyConsumption: DashboardAssembler.toDailyConsumptionFromUnified(response),
           categoryConsumption: DashboardAssembler.toConsumptionByCategoryFromUnified(response),
-          devices: DashboardAssembler.toDevicesFromUnified(response)
+          devices: DashboardAssembler.toDevicesFromUnified(response),
+          alerts: DashboardAssembler.toAlertsFromUnified(response)
         }))
       );
   }
