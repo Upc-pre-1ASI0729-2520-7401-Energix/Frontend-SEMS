@@ -1,5 +1,5 @@
 // src/app/sems/energy-management/presentation/views/settings/settings.ts
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -44,7 +44,8 @@ export class Settings implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private settingsStore: SettingsStore,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {
     console.log('Settings component constructed');
   }
@@ -75,6 +76,7 @@ export class Settings implements OnInit, OnDestroy {
           this.currentSettings = settings;
           this.editableSettings = JSON.parse(JSON.stringify(settings));
           console.log('Editable settings initialized:', this.editableSettings);
+          this.cdr.detectChanges(); // Force change detection
         }
       });
   }
@@ -101,6 +103,7 @@ export class Settings implements OnInit, OnDestroy {
           if (settings.rules) {
             this.rules = settings.rules;
           }
+          this.cdr.detectChanges(); // Force change detection
         },
         error: (error) => {
           console.error('Failed to load settings:', error);
@@ -111,6 +114,7 @@ export class Settings implements OnInit, OnDestroy {
           } else {
             this.showError(`Failed to load settings: ${error.message || 'Unknown error'}`);
           }
+          this.cdr.detectChanges(); // Force change detection on error too
         }
       });
   }
