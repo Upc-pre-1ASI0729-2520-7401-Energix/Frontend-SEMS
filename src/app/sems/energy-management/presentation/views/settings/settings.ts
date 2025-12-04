@@ -93,6 +93,15 @@ export class Settings implements OnInit, OnDestroy {
   loadSettings(): void {
     if (!this.currentUserId) return;
 
+    // Check if store already has settings for this user to preserve optimistic updates
+    const cachedSettings = this.settingsStore.currentSettings;
+    if (cachedSettings && cachedSettings.userId === this.currentUserId) {
+      console.log('Using cached settings from store for user:', this.currentUserId);
+      // Force change detection to ensure UI reflects store state immediately
+      this.cdr.detectChanges();
+      return;
+    }
+
     console.log('Loading settings for user:', this.currentUserId);
 
     this.settingsService.loadUserSettings(this.currentUserId)
@@ -156,55 +165,7 @@ export class Settings implements OnInit, OnDestroy {
     console.log('hasChanges:', this.hasChanges);
   }
 
-  get selectedFrequencies(): string[] {
-    return this.editableSettings.reportFrequencies || [];
-  }
 
-  get selectedFormats(): string[] {
-    return this.editableSettings.reportFormats || [];
-  }
-
-  toggleFrequency(freq: string): void {
-    console.log('toggleFrequency:', freq);
-
-    const frequencies = this.editableSettings.reportFrequencies || [];
-    const idx = frequencies.indexOf(freq);
-
-    if (idx > -1) {
-      this.editableSettings.reportFrequencies = frequencies.filter(f => f !== freq);
-      console.log('Removed:', freq);
-    } else if (frequencies.length < 2) {
-      this.editableSettings.reportFrequencies = [...frequencies, freq];
-      console.log('Added:', freq);
-    } else {
-      this.showError('Maximum 2 frequencies allowed');
-      return;
-    }
-
-    this.hasChanges = true;
-    console.log('Frequencies:', this.editableSettings.reportFrequencies);
-  }
-
-  toggleFormat(fmt: string): void {
-    console.log('toggleFormat:', fmt);
-
-    const formats = this.editableSettings.reportFormats || [];
-    const idx = formats.indexOf(fmt);
-
-    if (idx > -1) {
-      this.editableSettings.reportFormats = formats.filter(f => f !== fmt);
-      console.log('Removed:', fmt);
-    } else if (formats.length < 2) {
-      this.editableSettings.reportFormats = [...formats, fmt];
-      console.log('Added:', fmt);
-    } else {
-      this.showError('Maximum 2 formats allowed');
-      return;
-    }
-
-    this.hasChanges = true;
-    console.log('Formats:', this.editableSettings.reportFormats);
-  }
 
   onAddNewRule(): void {
     console.log('Add new rule clicked');
