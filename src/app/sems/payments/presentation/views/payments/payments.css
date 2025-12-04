@@ -35,6 +35,7 @@
 .payment-card,
 .history-card {
   height: fit-content;
+  width: 100%;
 }
 
 mat-card-header {
@@ -95,6 +96,9 @@ mat-card-title {
   padding: 0.75rem 0;
   font-size: 1rem;
   height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .submit-button mat-icon {
@@ -211,3 +215,97 @@ button[disabled] {
   cursor: not-allowed;
 }
 
+/* Responsive tweaks for smaller screens */
+@media (max-width: 720px) {
+  .payments-container {
+    padding: 1rem;
+  }
+
+  .payments-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .estimated-bill-info {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    gap: 0.75rem;
+  }
+
+  .estimated-bill-info mat-icon {
+    font-size: 1.75rem;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .bill-amount {
+    font-size: 1.25rem;
+  }
+
+  .estimated-bill-info button {
+    align-self: flex-end;
+    width: auto;
+  }
+
+  .payment-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .history-list {
+    max-height: 400px;
+  }
+}
+
+/* Extra small screens (mobile narrow) */
+@media (max-width: 420px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .estimated-bill-info {
+    padding: 0.75rem;
+    border-left-width: 3px;
+  }
+
+  .estimated-bill-info button {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .submit-button {
+    padding: 0.75rem 0;
+    font-size: 1rem;
+  }
+
+  .bill-amount {
+    font-size: 1.15rem;
+  }
+
+  .payment-amount {
+    font-size: 1rem;
+  }
+
+  .history-item {
+    padding: 0.75rem;
+  }
+}
+
+/* Ensure mat-card uses full width on small screens and has consistent padding */
+mat-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Make action buttons readable and centered on tiny screens */
+@media (max-width: 420px) {
+  .submit-button,
+  .estimated-bill-info button {
+    font-weight: 600;
+  }
+}
