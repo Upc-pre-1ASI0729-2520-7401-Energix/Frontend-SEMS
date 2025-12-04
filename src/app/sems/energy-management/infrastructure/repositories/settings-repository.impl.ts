@@ -31,9 +31,19 @@ export class SettingsRepositoryImpl implements SettingsRepository {
 
   updateSettings(userId: string, request: SettingsRequest): Observable<SettingsResponse> {
     // Based on screenshot: PUT /api/v1/settings
-    return this.http.put<SettingsResponse>(`${BASE_URL}`, request, {
-      headers: this.getHeaders()
-    });
+    console.log('Saving settings at:', BASE_URL, 'with body:', request);
+
+    if (request.id) {
+      // Update existing settings
+      return this.http.put<SettingsResponse>(`${BASE_URL}`, request, {
+        headers: this.getHeaders()
+      });
+    } else {
+      // Create new settings (if they don't exist)
+      return this.http.post<SettingsResponse>(`${BASE_URL}`, request, {
+        headers: this.getHeaders()
+      });
+    }
   }
 
   // Rules Management
