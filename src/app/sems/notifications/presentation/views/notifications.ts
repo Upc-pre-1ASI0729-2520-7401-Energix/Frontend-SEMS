@@ -24,19 +24,22 @@ export class NotificationsComponent implements OnInit {
   constructor(private notificationService: NotificationService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
+    console.log('NotificationsComponent - ngOnInit: loading notifications');
     this.loadNotifications();
     this.showNotifications = false;
   }
 
   loadNotifications() {
+    console.log('NotificationsComponent - calling notificationService.getNotifications()');
     this.notificationService.getNotifications().subscribe({
       next: (data) => {
-        this.notifications = data.map(n => ({ ...n, read: n.isRead }));
+        console.log('NotificationsComponent - received notifications count:', Array.isArray(data) ? data.length : 'not-array');
+        this.notifications = (Array.isArray(data) ? data : []).map(n => ({ ...n, read: (n as any).isRead }));
         this.cdr.detectChanges();
-        console.log('Notification types:', data.map(n => n.type));
+        console.log('Notification types:', (Array.isArray(data) ? data.map(n => n.type) : []));
 
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error('NotificationsComponent - error in getNotifications subscription:', err)
     });
   }
   get unreadCount(): number {
