@@ -21,6 +21,8 @@ export class ReportResource {
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem(environment.tokenKey);
+    console.log('🔑 Token encontrado:', token ? 'Sí (longitud: ' + token.length + ')' : 'No');
+    
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : ''
@@ -59,5 +61,27 @@ export class ReportResource {
   getReportData(id: string, includeCharts: boolean = true): Observable<any> {
     const params = new HttpParams().set('includeCharts', includeCharts.toString());
     return this.http.get(`${this.apiUrl}/${id}/data`, { params, headers: this.getHeaders() });
+  }
+
+  getWeeklyConsumption(userId?: number): Observable<any> {
+    let params = new HttpParams();
+    if (userId) {
+      params = params.set('userId', userId.toString());
+    }
+    return this.http.get<any>(`${environment.apiUrl}/api/v1/reports/weekly-consumption`, { 
+      params, 
+      headers: this.getHeaders() 
+    });
+  }
+
+  getTopDevices(userId?: number): Observable<any> {
+    let params = new HttpParams();
+    if (userId) {
+      params = params.set('userId', userId.toString());
+    }
+    return this.http.get<any>(`${environment.apiUrl}/api/v1/reports/top-devices`, { 
+      params, 
+      headers: this.getHeaders() 
+    });
   }
 }

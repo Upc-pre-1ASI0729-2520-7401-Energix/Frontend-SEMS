@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, delay } from 'rxjs';
 import { environment } from '../../../../../environments/environments';
 import { ReportRepositoryImpl } from '../../infrastructure/repositories/report-repository.impl';
+import { ReportResource } from '../../infrastructure/resources/report.resource';
 import { Report, ReportType, ReportFormat, ReportPeriod } from '../../domain/model/entities/report.entity';
 import { ReportGenerationParams } from '../../domain/model/repositories/report.repository';
 
@@ -13,6 +14,7 @@ export class ReportService {
 
   constructor(
     private reportRepository: ReportRepositoryImpl,
+    private reportResource: ReportResource,
     private http: HttpClient
   ) {}
 
@@ -89,15 +91,40 @@ export class ReportService {
 
   // Métodos para obtener datos de gráficos desde la API
   getWeeklyConsumption(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/api/v1/reports/weeklyConsumption`).pipe(
-      delay(200) // Pequeño delay para simular latencia real
+    const userId = this.getCurrentUserId();
+    console.log('🔍 Obteniendo weekly consumption desde backend para userId:', userId);
+    
+    return this.reportResource.getWeeklyConsumption(userId).pipe(
+      delay(200)
     );
   }
 
-  getDeviceRanking(): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/deviceRanking`).pipe(
-      delay(200) // Pequeño delay para simular latencia real
+  getTopDevices(): Observable<any> {
+    const userId = this.getCurrentUserId();
+    console.log('🔍 Obteniendo top devices desde backend para userId:', userId);
+    
+    return this.reportResource.getTopDevices(userId).pipe(
+      delay(200)
     );
+  }
+
+  private getCurrentUserId(): number | undefined {
+    try {
+      const userStr = localStorage.getItem(environment.userKey);
+      console.log('🗝 Contenido de userKey en localStorage:', userStr);
+      
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        console.log('🔑 Usuario actual completo:', user);
+        console.log('🎯 ID del usuario:', user.id);
+        return user.id;
+      } else {
+        console.warn('⚠️ No hay usuario en localStorage');
+      }
+    } catch (error) {
+      console.error('❌ Error obteniendo userId:', error);
+    }
+    return undefined;
   }
 
   getReportSummary(): Observable<any> {
