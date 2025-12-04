@@ -383,6 +383,13 @@
       "success": "Success",
       "warning": "Warning",
       "info": "Information"
+    },
+    "messages": {
+      "maintenance": "Your device requires preventive maintenance.",
+      "uptime_warning": "Your device has been on for over 24 hours. Consider turning it off to save energy.",
+      "updated": "The operating system has been updated successfully.",
+      "optimized": "The device optimized its consumption, saving {{percent}}% energy.",
+      "usage_spike": "A usage spike of {{percent}}% was detected in the last hours."
     }
   }
 }
