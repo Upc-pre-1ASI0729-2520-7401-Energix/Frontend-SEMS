@@ -18,14 +18,6 @@
 
     <!-- Chart with data -->
     <div *ngIf="weeklyData.length > 0">
-      <!-- Average line indicator -->
-      <div *ngIf="weeklyAverage > 0" class="average-line-container">
-        <div class="average-line" [style.bottom.%]="getAverageLinePosition()"></div>
-        <span class="average-label" [style.bottom.%]="getAverageLinePosition() + 2">
-          {{ 'reports.weeklyChart.weeklyAverage' | translate }}: {{ weeklyAverage | number:'1.1-1' }} kWh
-        </span>
-      </div>
-
       <!-- Chart bars -->
       <div class="chart-bars">
         <div class="bar-container" *ngFor="let data of weeklyData">
@@ -41,7 +33,9 @@
   </div>
 
   <div *ngIf="!isLoading && weeklyData.length > 0 && weeklyAverage > 0" class="chart-footer">
-    <p class="comparison-text">{{ 'reports.weeklyChart.comparison' | translate }}</p>
-    <p class="encouragement">{{ 'reports.weeklyChart.encouragement' | translate }}</p>
+    <p class="weekly-average-text">
+      {{ 'reports.weeklyChart.weeklyAverageMessage' | translate }}: 
+      <strong>{{ weeklyAverage | number:'1.1-1' }} kWh</strong>
+    </p>
   </div>
 </div>

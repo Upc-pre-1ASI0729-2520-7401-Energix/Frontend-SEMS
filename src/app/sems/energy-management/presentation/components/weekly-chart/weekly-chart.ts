@@ -7,6 +7,7 @@ interface WeeklyData {
   day: string;
   consumption: number;
   label: string;
+  date?: string;
 }
 
 @Component({
@@ -41,27 +42,80 @@ export class WeeklyChart implements OnInit {
     this.hasError = false;
     this.errorMessage = '';
     
+    console.log('🔄 Cargando datos semanales...');
+    
     this.reportService.getWeeklyConsumption().subscribe({
       next: (data) => {
-        this.weeklyData = data.dataPoints.map((point: any) => ({
-          day: point.day,
-          consumption: point.consumption,
-          label: this.getDayLabel(point.day)
+        console.log('✅ Datos semanales recibidos:', data);
+        
+        if (!data || !data.dailyConsumptions) {
+          console.warn('⚠️ Estructura de datos inesperada:', data);
+          this.initializeEmptyWeeklyData();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          return;
+        }
+        
+        this.weeklyData = data.dailyConsumptions.map((daily: any) => ({
+          day: this.getDayAbbreviation(daily.dayName),
+          consumption: daily.consumption,
+          label: daily.dayName,
+          date: daily.date
         }));
+        
+        console.log('📊 Datos procesados:', this.weeklyData);
+        
         // Calcular el promedio real basado en los datos actuales
         this.calculateMetrics();
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error loading weekly data:', error);
-        this.weeklyData = [];
-        this.weeklyAverage = 0;
+        console.error('❌ Error cargando datos semanales:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('URL:', error.url);
+        
+        let errorMessage = 'No se pudieron cargar los datos';
+        
+        if (error.status === 401) {
+          errorMessage = 'Error de autenticación. Por favor, inicie sesión nuevamente.';
+          console.error('❌ Error 401: Usuario no autenticado');
+        } else if (error.status === 403) {
+          errorMessage = 'No tiene permisos para acceder a estos datos.';
+        } else if (error.status === 404) {
+          errorMessage = 'No se encontraron datos para este usuario.';
+        } else if (error.status === 0) {
+          errorMessage = 'Error de conexión. Verifique su conexión a internet.';
+        }
+        
+        this.initializeEmptyWeeklyData();
         this.isLoading = false;
-        this.hasError = false;
+        this.hasError = true;
+        this.errorMessage = `Error ${error.status}: ${errorMessage}`;
         this.cdr.detectChanges();
       }
     });
+  }
+
+  private getDayAbbreviation(dayName: string): string {
+    const dayAbbreviations: { [key: string]: string } = {
+      'lunes': 'MON',
+      'martes': 'TUE', 
+      'miércoles': 'WED',
+      'jueves': 'THU',
+      'viernes': 'FRI',
+      'sábado': 'SAT',
+      'domingo': 'SUN',
+      'Monday': 'MON',
+      'Tuesday': 'TUE',
+      'Wednesday': 'WED',
+      'Thursday': 'THU',
+      'Friday': 'FRI',
+      'Saturday': 'SAT',
+      'Sunday': 'SUN'
+    };
+    return dayAbbreviations[dayName] || dayName.substring(0, 3).toUpperCase();
   }
 
   private getDayLabel(day: string): string {
