@@ -43,7 +43,7 @@ export interface PaymentHistoryResponse {
   providedIn: 'root'
 })
 export class PaymentResource {
-  private readonly stripeApiUrl = 'https://api-stripe-a6xr.onrender.com';
+  private readonly stripeApiUrl = environment.stripeApiUrl;
 
   constructor(private readonly http: HttpClient) {}
 

@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
+import { environment } from '../../../../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StripeService {
   private stripePromise: Promise<Stripe | null>;
-  private readonly publicKey = 'pk_test_51QRGoVP3te7cBLa3F8KLzqQwRXVhvLitkdKdyNPKMYvHDmjlh5ZhBvQEBIPFONzxLF6SBQ50lzkEjJOPwWNDtLIJ00YQ1GRzBM';
 
   constructor() {
-    this.stripePromise = loadStripe(this.publicKey);
+    this.stripePromise = loadStripe(environment.stripePublicKey);
   }
 
   async getStripe(): Promise<Stripe | null> {
