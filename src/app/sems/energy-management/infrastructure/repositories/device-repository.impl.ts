@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Device, DeviceStatus } from '../../domain/model/device.entity';
 import { DeviceRepository } from '../../domain/model/repositories/device.repository';
 import { environment } from '../../../../../environments/environments';
+import { TokenService } from '../../../authentication/infrastructure/services/token.service';
 
 // DTO for API communication
 export interface DeviceResponse {
@@ -26,17 +27,46 @@ export interface DeviceResponse {
 export class DeviceRepositoryImpl implements DeviceRepository {
   private readonly apiUrl = `${environment.apiUrl}/api/v1/devices`;
 
-  constructor(private readonly http: HttpClient) { }
+  constructor(
+    private readonly http: HttpClient,
+    private readonly tokenService: TokenService
+  ) { }
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem(environment.tokenKey);
-    return new HttpHeaders({
+    console.log('DeviceRepository - Getting headers...');
+    
+    // First try TokenService
+    let token = this.tokenService.getAccessToken();
+    console.log('DeviceRepository - Token from TokenService:', token ? 'Present' : 'Not found');
+    console.log('DeviceRepository - Token expired?', this.tokenService.isTokenExpired());
+    
+    // If no token from service, try localStorage directly
+    if (!token) {
+      token = localStorage.getItem(environment.tokenKey);
+      console.log('DeviceRepository - Token from localStorage:', token ? 'Present' : 'Not found');
+    }
+    
+    if (!token) {
+      console.error('DeviceRepository - No token available');
+      console.log('DeviceRepository - All localStorage keys:', Object.keys(localStorage));
+      return new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+    }
+    
+    const headers = {
       'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
-    });
+      'Authorization': `Bearer ${token}`
+    };
+    
+    console.log('DeviceRepository - Final headers Authorization:', `Bearer ${token.substring(0, 20)}...`);
+    return new HttpHeaders(headers);
   }
 
   getAllDevices(): Observable<Device[]> {
+    console.log('DeviceRepository - Getting all devices...');
+    console.log('DeviceRepository - API URL:', this.apiUrl);
+    
     return this.http.get<DeviceResponse[]>(this.apiUrl, { headers: this.getHeaders() })
       .pipe(
         map((responses: DeviceResponse[]) => {
@@ -106,11 +136,53 @@ export class DeviceRepositoryImpl implements DeviceRepository {
   }
 
   deleteDevice(id: string): Observable<boolean> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() })
-      .pipe(
-        map(() => true),
-        catchError(() => of(false))
-      );
+    // Convert string ID to number for the API endpoint
+    const numericId = parseInt(id, 10);
+    
+    if (isNaN(numericId)) {
+      console.error('DeviceRepository - Invalid device ID:', id);
+      return of(false);
+    }
+    
+    console.log('DeviceRepository - Deleting device with ID:', numericId);
+    console.log('DeviceRepository - Delete URL:', `${this.apiUrl}/${numericId}`);
+    
+    const headers = this.getHeaders();
+    console.log('DeviceRepository - Headers for DELETE:');
+    headers.keys().forEach(key => {
+      console.log(`DeviceRepository - Header ${key}:`, headers.get(key)?.substring(0, 50) + '...');
+    });
+    
+    return this.http.delete(`${this.apiUrl}/${numericId}`, { 
+      headers: headers,
+      responseType: 'text' as 'json'
+    }).pipe(
+      map((response: any) => {
+        console.log('DeviceRepository - Delete successful:', response);
+        return true;
+      }),
+      catchError((error) => {
+        console.error('DeviceRepository - Delete error:', error);
+        console.error('DeviceRepository - Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          message: error.message,
+          error: error.error
+        });
+        
+        if (error.status === 401) {
+          console.log('DeviceRepository - 401 Error: Insufficient permissions for DELETE operation');
+          console.log('DeviceRepository - This suggests the user role may not have delete permissions');
+        } else if (error.status === 403) {
+          console.log('DeviceRepository - 403 Error: Forbidden - User explicitly denied access');
+        } else if (error.status === 404) {
+          console.log('DeviceRepository - 404 Error: Device not found');
+        }
+        
+        return of(false);
+      })
+    );
   }
 
   toggleDevice(id: string): Observable<Device> {

@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Device } from '../../../domain/model/device.entity';
 import { DashboardService } from '../../../application/services/dashboard.service';
 import { DevicesService } from '../../../application/services/devices.service';
+import { AuthControllerService } from '../../../../authentication/application/services/auth-controller.service';
 
 @Component({
   selector: 'app-devices',
@@ -26,10 +27,26 @@ export class Devices implements OnInit, OnDestroy {
     private readonly devicesService: DevicesService,
     private readonly translateService: TranslateService,
     private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly authController: AuthControllerService
   ) { }
 
   ngOnInit(): void {
+    console.log('Devices - Component initialized');
+    
+    // Check authentication status
+    const currentUser = this.authController.getCurrentUser();
+    const isAuthenticated = this.authController.isAuthenticated();
+    
+    console.log('Devices - Current user:', currentUser);
+    console.log('Devices - Is authenticated:', isAuthenticated);
+    
+    if (!isAuthenticated) {
+      console.warn('Devices - User not authenticated, redirecting to login');
+      this.router.navigate(['/login']);
+      return;
+    }
+    
     // Force change detection
     this.cdr.detectChanges();
     this.loadDevices();
@@ -171,20 +188,52 @@ export class Devices implements OnInit, OnDestroy {
     );
 
     if (confirmed) {
+      console.log('Devices - Attempting to delete device:', deviceId, deviceName);
+      
+      // Check token status and user role before deletion
+      const currentUser = this.authController.getCurrentUser();
+      const isAuthenticated = this.authController.isAuthenticated();
+      console.log('Devices - Auth check before delete - User:', currentUser?.email);
+      console.log('Devices - Auth check before delete - User role:', currentUser?.role);
+      console.log('Devices - Auth check before delete - Authenticated:', isAuthenticated);
+      
+      if (!isAuthenticated) {
+        console.error('Devices - User not authenticated, redirecting to login');
+        this.router.navigate(['/login']);
+        return;
+      }
+      
+      // Check if user has admin role
+      if (currentUser?.role !== 'admin' && currentUser?.role !== 'ADMIN') {
+        console.warn('Devices - User role is not admin:', currentUser?.role);
+        alert('Solo los administradores pueden eliminar dispositivos.');
+        return;
+      }
+      
       this.devicesService.deleteDevice(deviceId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (success: boolean) => {
+            console.log('Devices - Delete result:', success);
             if (success) {
+              console.log('Devices - Device deleted successfully, reloading list');
               // Reload the devices list
               this.loadDevices();
             } else {
+              console.error('Devices - Delete failed');
               alert(this.translateService.instant('dashboard.devices.deleteError'));
             }
           },
           error: (error: any) => {
-            console.error('Error deleting device:', error);
-            alert(this.translateService.instant('dashboard.devices.deleteError'));
+            console.error('Devices - Error deleting device:', error);
+            
+            // If it's a 401 error, provide more specific feedback
+            if (error.status === 401) {
+              console.log('Devices - 401 error, checking if user has proper permissions');
+              alert('No tienes permisos suficientes para eliminar este dispositivo. Contacta al administrador.');
+            } else {
+              alert(this.translateService.instant('dashboard.devices.deleteError'));
+            }
           }
         });
     }
