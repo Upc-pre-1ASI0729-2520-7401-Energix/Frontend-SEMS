@@ -383,6 +383,13 @@
       "success": "Éxito",
       "warning": "Advertencia",
       "info": "Información"
+    },
+    "messages": {
+      "maintenance": "El dispositivo requiere mantenimiento preventivo.",
+      "uptime_warning": "Tu dispositivo ha estado encendido por más de 24 horas. Considera apagarlo para ahorrar energía.",
+      "updated": "El sistema operativo se ha actualizado correctamente.",
+      "optimized": "El dispositivo ha optimizado su consumo, ahorrando {{percent}}% de energía.",
+      "usage_spike": "Se ha detectado un pico de uso del {{percent}}% en las últimas horas."
     }
   }
 }
