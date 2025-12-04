@@ -1,5 +1,7 @@
 // src/app/sems/energy-management/infrastructure/request/settings.request.ts
 export interface SettingsRequest {
+  id?: string;
+  userId?: string;
   autoSavingMode?: {
     turnOffPatio?: boolean;
     turnOffDevices?: boolean;
@@ -15,4 +17,9 @@ export interface SettingsRequest {
   reportFrequencies?: string[];
   reportFormats?: string[];
   twoFactorEnabled?: boolean;
+  savingRules?: {
+    id?: string;
+    name?: string;
+    isEnabled?: boolean;
+  }[];
 }
