@@ -18,7 +18,12 @@ export class SettingsAssembler {
       reportFormats: dto.reportFormats,
       twoFactorEnabled: dto.twoFactorEnabled,
       createdAt: new Date(dto.createdAt),
-      updatedAt: new Date(dto.updatedAt)
+      updatedAt: new Date(dto.updatedAt),
+      rules: dto.savingRules?.map(r => ({
+        id: r.id,
+        name: r.name,
+        isEnabled: r.isEnabled
+      }))
     };
   }
 

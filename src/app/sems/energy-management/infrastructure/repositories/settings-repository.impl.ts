@@ -6,6 +6,7 @@ import { SettingsRepository } from '../../domain/model/repositories/settings.rep
 import { SettingsResponse } from '../response/settings.response';
 import { SettingsRequest } from '../request/settings.request';
 import { environment } from '../../../../../environments/environments';
+import { SavingRule } from '../resources/settings.resource';
 
 const BASE_URL = `${environment.apiUrl}/api/v1/settings`;
 
@@ -13,7 +14,7 @@ const BASE_URL = `${environment.apiUrl}/api/v1/settings`;
   providedIn: 'root'
 })
 export class SettingsRepositoryImpl implements SettingsRepository {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem(environment.tokenKey);
@@ -21,25 +22,50 @@ export class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   getUserSettings(userId: string): Observable<SettingsResponse> {
-    return this.http.get<SettingsResponse>(`${BASE_URL}/${userId}`, {
+    // Backend likely infers user from token, but keeping userId if required by specific endpoint design
+    // Based on screenshot: GET /api/v1/settings
+    return this.http.get<SettingsResponse>(`${BASE_URL}`, {
       headers: this.getHeaders()
     });
   }
 
   updateSettings(userId: string, request: SettingsRequest): Observable<SettingsResponse> {
-    return this.http.put<SettingsResponse>(`${BASE_URL}/${userId}`, request, {
+    // Based on screenshot: PUT /api/v1/settings
+    return this.http.put<SettingsResponse>(`${BASE_URL}`, request, {
+      headers: this.getHeaders()
+    });
+  }
+
+  // Rules Management
+  createRule(rule: Partial<SavingRule>): Observable<SavingRule> {
+    // POST /api/v1/settings/rules
+    return this.http.post<SavingRule>(`${BASE_URL}/rules`, rule, {
+      headers: this.getHeaders()
+    });
+  }
+
+  updateRule(ruleId: string, rule: Partial<SavingRule>): Observable<SavingRule> {
+    // PUT /api/v1/settings/rules/{ruleId}
+    return this.http.put<SavingRule>(`${BASE_URL}/rules/${ruleId}`, rule, {
+      headers: this.getHeaders()
+    });
+  }
+
+  deleteRule(ruleId: string): Observable<void> {
+    // DELETE /api/v1/settings/rules/{ruleId}
+    return this.http.delete<void>(`${BASE_URL}/rules/${ruleId}`, {
       headers: this.getHeaders()
     });
   }
 
   resetToDefaults(userId: string): Observable<SettingsResponse> {
-    return this.http.post<SettingsResponse>(`${BASE_URL}/${userId}/reset`, {}, {
+    return this.http.post<SettingsResponse>(`${BASE_URL}/reset`, {}, {
       headers: this.getHeaders()
     });
   }
 
   changePassword(userId: string, oldPassword: string, newPassword: string): Observable<void> {
-    return this.http.post<void>(`${BASE_URL}/${userId}/password`, {
+    return this.http.post<void>(`${BASE_URL}/password`, {
       oldPassword,
       newPassword
     }, {
@@ -49,7 +75,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
 
   enableTwoFactor(userId: string): Observable<{ qrCode: string; secret: string }> {
     return this.http.post<{ qrCode: string; secret: string }>(
-      `${BASE_URL}/${userId}/2fa/enable`,
+      `${BASE_URL}/2fa/enable`,
       {},
       { headers: this.getHeaders() }
     );

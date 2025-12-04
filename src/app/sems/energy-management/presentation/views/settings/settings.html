@@ -10,29 +10,17 @@
           <button mat-mini-fab color="primary" class="add-btn" (click)="onAddNewRule()">+</button>
         </div>
         <div class="toggles">
-          <mat-checkbox
-            [checked]="editableSettings.autoSavingMode?.turnOffPatio"
-            (change)="onAutoSavingModeChange('turnOffPatio', $event.checked)">
-            {{ t('settings.autoSavingMode.turnOffPatio') }}
-          </mat-checkbox>
-
-          <mat-checkbox
-            [checked]="editableSettings.autoSavingMode?.turnOffDevices"
-            (change)="onAutoSavingModeChange('turnOffDevices', $event.checked)">
-            {{ t('settings.autoSavingMode.turnOffDevices') }}
-          </mat-checkbox>
-
-          <mat-checkbox
-            [checked]="editableSettings.autoSavingMode?.unplugWeekdays"
-            (change)="onAutoSavingModeChange('unplugWeekdays', $event.checked)">
-            {{ t('settings.autoSavingMode.unplugWeekdays') }}
-          </mat-checkbox>
-
-          <mat-checkbox
-            [checked]="editableSettings.autoSavingMode?.runDishwasher"
-            (change)="onAutoSavingModeChange('runDishwasher', $event.checked)">
-            {{ t('settings.autoSavingMode.runDishwasher') }}
-          </mat-checkbox>
+          <div *ngFor="let rule of rules" class="rule-item">
+            <mat-checkbox [checked]="rule.isEnabled" (change)="onToggleRule(rule)">
+              {{ rule.name }}
+            </mat-checkbox>
+            <button mat-icon-button color="warn" (click)="onDeleteRule(rule.id)">
+              <span class="material-icons">delete</span>
+            </button>
+          </div>
+          <div *ngIf="rules.length === 0" class="no-rules">
+            <p>No active rules. Add one to start saving energy!</p>
+          </div>
         </div>
       </div>
 
@@ -40,14 +28,12 @@
       <div class="card">
         <h2>{{ t('settings.notifications.title') }}</h2>
         <div class="toggles">
-          <mat-checkbox
-            [checked]="editableSettings.notifications?.highConsumption"
+          <mat-checkbox [checked]="editableSettings.notifications?.highConsumption"
             (change)="onNotificationChange('highConsumption', $event.checked)">
             {{ t('settings.notifications.highConsumption') }}
           </mat-checkbox>
 
-          <mat-checkbox
-            [checked]="editableSettings.notifications?.summary"
+          <mat-checkbox [checked]="editableSettings.notifications?.summary"
             (change)="onNotificationChange('summary', $event.checked)">
             {{ t('settings.notifications.summary') }}
           </mat-checkbox>
@@ -57,7 +43,7 @@
           {{ t('settings.notifications.schedule', {
           start: editableSettings.notifications?.scheduleStart || '05:00 AM',
           end: editableSettings.notifications?.scheduleEnd || '22:00 PM'
-        }) }}
+          }) }}
           <button mat-stroked-button color="accent" class="edit-btn" (click)="onEditSchedule()">
             {{ t('settings.notifications.edit') }}
           </button>
@@ -66,38 +52,23 @@
         <hr />
         <h3>{{ t('settings.reports.title') }}</h3>
         <div class="chip-group">
-          <button
-            mat-button
-            class="chip"
-            [ngClass]="{'selected': selectedFrequencies.includes('Daily')}"
+          <button mat-button class="chip" [ngClass]="{'selected': selectedFrequencies.includes('Daily')}"
             (click)="toggleFrequency('Daily')">
             {{ t('settings.reports.daily') }}
           </button>
-          <button
-            mat-button
-            class="chip"
-            [ngClass]="{'selected': selectedFrequencies.includes('Weekly')}"
+          <button mat-button class="chip" [ngClass]="{'selected': selectedFrequencies.includes('Weekly')}"
             (click)="toggleFrequency('Weekly')">
             {{ t('settings.reports.weekly') }}
           </button>
-          <button
-            mat-button
-            class="chip"
-            [ngClass]="{'selected': selectedFrequencies.includes('Monthly')}"
+          <button mat-button class="chip" [ngClass]="{'selected': selectedFrequencies.includes('Monthly')}"
             (click)="toggleFrequency('Monthly')">
             {{ t('settings.reports.monthly') }}
           </button>
-          <button
-            mat-button
-            class="chip"
-            [ngClass]="{'selected': selectedFormats.includes('PDF')}"
+          <button mat-button class="chip" [ngClass]="{'selected': selectedFormats.includes('PDF')}"
             (click)="toggleFormat('PDF')">
             {{ t('settings.reports.pdf') }}
           </button>
-          <button
-            mat-button
-            class="chip"
-            [ngClass]="{'selected': selectedFormats.includes('CSV')}"
+          <button mat-button class="chip" [ngClass]="{'selected': selectedFormats.includes('CSV')}"
             (click)="toggleFormat('CSV')">
             {{ t('settings.reports.csv') }}
           </button>
@@ -133,21 +104,11 @@
     </div>
 
     <div class="actions">
-      <button
-        mat-raised-button
-        color="primary"
-        class="save-btn"
-        [disabled]="!hasChanges"
-        (click)="saveSettings()">
+      <button mat-raised-button color="primary" class="save-btn" [disabled]="!hasChanges" (click)="saveSettings()">
         {{ t('settings.actions.save') }}
       </button>
 
-      <button
-        mat-button
-        color="warn"
-        class="cancel-btn"
-        [disabled]="!hasChanges"
-        (click)="cancelChanges()">
+      <button mat-button color="warn" class="cancel-btn" [disabled]="!hasChanges" (click)="cancelChanges()">
         {{ t('settings.actions.cancel') }}
       </button>
     </div>

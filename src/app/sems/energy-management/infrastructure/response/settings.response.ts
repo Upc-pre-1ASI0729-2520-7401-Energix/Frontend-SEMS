@@ -19,4 +19,9 @@ export interface SettingsResponse {
   twoFactorEnabled: boolean;
   createdAt: string;
   updatedAt: string;
+  savingRules?: {
+    id: string;
+    name: string;
+    isEnabled: boolean;
+  }[];
 }

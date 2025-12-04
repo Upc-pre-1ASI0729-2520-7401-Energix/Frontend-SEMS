@@ -1,7 +1,7 @@
 :host {
   display: block;
   font-family: 'Inter', sans-serif;
-  color: #222;
+  color: #000;
 }
 
 .settings-content {
@@ -34,6 +34,7 @@
 .settings-container h1 {
   font-size: 1.8rem;
   margin-bottom: 20px;
+  font-weight: bold;
 }
 
 /* Grid de secciones */
@@ -46,13 +47,15 @@
 
 .card {
   background: #fff;
-  border: 3px dashed #222;
+  border: 2px solid #000;
+  /* Solid border as per mockup */
   border-radius: 18px;
   padding: 28px 32px 24px 32px;
   box-sizing: border-box;
   min-height: 260px;
   margin-bottom: 0;
-  box-shadow: 2px 2px 0 0 #222, 4px 4px 0 0 #bbb;
+  box-shadow: 4px 4px 0 0 #000;
+  /* Hard shadow */
 }
 
 .card-header {
@@ -85,19 +88,71 @@
   margin: 6px 0;
 }
 
+.rule-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rule-item mat-checkbox {
+  flex: 1;
+}
+
+/* Checkbox Styling to match mockup */
+
+/* Force visible border on ALL checkboxes (unchecked state) */
+::ng-deep .mat-mdc-checkbox .mdc-checkbox__background,
+::ng-deep .mdc-checkbox .mdc-checkbox__background,
+::ng-deep .mat-checkbox-frame {
+  border: 2px solid #000 !important;
+  background-color: transparent !important;
+  opacity: 1 !important;
+}
+
+/* Checked state styling */
+::ng-deep .mat-mdc-checkbox-checked .mdc-checkbox__background,
+::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+  background-color: #1976d2 !important;
+  border-color: #1976d2 !important;
+}
+
+/* Checkmark color */
+::ng-deep .mdc-checkbox__checkmark-path,
+::ng-deep .mat-checkbox-checkmark-path {
+  stroke: #fff !important;
+}
+
+/* Label styling */
+::ng-deep .mat-checkbox-label,
+::ng-deep .mdc-label {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.no-rules {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
 .schedule {
   margin: 10px 0;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .schedule span {
-  color: #007bff;
+  color: #000;
 }
 
 hr {
   border: none;
-  border-top: 1px solid #ccc;
-  margin: 10px 0;
+  border-top: 1px solid #eee;
+  margin: 15px 0;
 }
 
 .chip-group {
@@ -113,7 +168,7 @@ hr {
   border-radius: 50px;
   min-width: 80px;
   min-height: 38px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   border: none;
   margin: 0;
@@ -125,10 +180,8 @@ hr {
 }
 
 .chip:hover {
-  background: #000;
-  color: #fff;
+  background: #d0e4ff;
 }
-
 
 .chip.selected {
   background: #1976d2;
@@ -144,26 +197,29 @@ hr {
 .edit-btn {
   background: #000 !important;
   color: #fff !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   min-width: 60px;
-  margin-left: 12px;
+  margin-left: auto;
+  /* Push to right */
+  font-size: 0.8rem !important;
+  padding: 0 12px !important;
+  height: 32px !important;
+  line-height: 32px !important;
 }
 
 .add-btn {
   background: #000;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 4px 10px;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-}
-
-.save-btn {
-  background: #1976d2 !important;
-  color: #fff !important;
-  border-radius: 8px !important;
-  min-width: 100px;
-  margin-right: 12px;
+  font-size: 1.2rem;
+  padding: 0;
 }
 
 ul {
@@ -171,72 +227,45 @@ ul {
   padding: 0;
 }
 
+ul li {
+  margin-bottom: 8px;
+}
+
 ul li a {
-  color: #007bff;
-  text-decoration: none;
+  color: #1976d2;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .security-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 15px;
 }
 
 /* Botones Save/Cancel */
 .actions {
   margin-top: 30px;
   display: flex;
-  gap: 10px;
+  gap: 16px;
 }
 
 .save-btn {
   background: #1976d2 !important;
   color: #fff !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   min-width: 100px;
-  margin-right: 12px;
+  height: 40px;
 }
 
 .cancel-btn {
   color: #1976d2 !important;
   background: #fff !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   min-width: 100px;
-  border: 1px solid #1976d2 !important;
-}
-
-.actions {
-  margin-top: 24px;
-  display: flex;
-  gap: 16px;
-}
-
-ul {
-  padding-left: 0;
-  list-style: none;
-}
-
-
-ul li a {
-  color: #1976d2;
-  text-decoration: underline;
-  font-size: 1rem;
-}
-
-/* Evita superposición o bloqueos al hacer clic */
-button.chip {
-  pointer-events: all;
-  position: relative;
-  z-index: 2;
-}
-
-.selected-black {
-  color: #000 !important;
-}
-
-.selected-black {
-  color: #000 !important;
+  border: 1px solid #ccc !important;
+  height: 40px;
 }
 
 /* Tablet Responsive */
