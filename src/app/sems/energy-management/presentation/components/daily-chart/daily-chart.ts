@@ -142,8 +142,25 @@ export class DailyChart implements OnInit, OnChanges {
 
   ngOnInit(): void {
     console.log('📊 DailyChart - ngOnInit');
+    // Actualizar traducciones de los ejes
+    this.updateAxisLabels();
     // Inicializar con datos vacíos
     this.updateChartData();
+
+    // Suscribirse a cambios de idioma
+    this.translate.onLangChange.subscribe(() => {
+      this.updateAxisLabels();
+      this.updateChartData();
+    });
+  }
+
+  private updateAxisLabels(): void {
+    if (this.lineChartOptions?.scales?.['x']?.title) {
+      this.lineChartOptions.scales['x'].title.text = this.translate.instant('dashboard.axes.time');
+    }
+    if (this.lineChartOptions?.scales?.['y']?.title) {
+      this.lineChartOptions.scales['y'].title.text = this.translate.instant('dashboard.units.kwh');
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
