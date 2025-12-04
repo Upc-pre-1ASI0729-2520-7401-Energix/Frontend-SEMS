@@ -94,7 +94,7 @@ export class RegisterForm implements OnInit, OnDestroy {
     const hasLower = /[a-z]/.test(password);
     const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
 
-    const valid = hasNumber && hasUpper && hasLower && password.length >= 8;
+    const valid = hasNumber && hasUpper && hasLower && hasSpecial && password.length >= 8;
     
     if (!valid) {
       return { strongPassword: true };
@@ -208,7 +208,7 @@ export class RegisterForm implements OnInit, OnDestroy {
       
       if (control.errors['strongPassword']) {
         return this.translate.instant('auth.register.errors.password.weak') || 
-               'La contraseña debe tener al menos 8 caracteres, mayúsculas, minúsculas y números';
+               'La contraseña debe tener al menos 8 caracteres, mayúsculas, minúsculas, números y caracteres especiales (!@#$%^&*)';
       }
       
       if (control.errors['passwordMismatch']) {

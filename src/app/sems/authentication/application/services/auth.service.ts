@@ -45,47 +45,13 @@ export class AuthService {
     const hasValidToken = this.tokenService.hasValidToken();
 
     if (user && hasValidToken && token) {
-      // Load fresh profile data from backend
-      this.http.get<any>(`${environment.apiUrl}/api/v1/profiles/me`, {
-        headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
-      }).subscribe({
-        next: (profileData) => {
-          console.log('AuthService - Loaded profile on init:', profileData);
-
-          const updatedUser = new User(
-            (profileData.id ?? 0).toString(),
-            profileData.email,
-            profileData.firstName,
-            profileData.lastName,
-            'USER',
-            true,
-            new Date(),
-            new Date(),
-            undefined,
-            profileData.phone,
-            profileData.address,
-            profileData.profilePhotoUrl
-          );
-
-          this.tokenService.saveUser(updatedUser);
-
-          this.updateAuthState({
-            user: updatedUser,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null
-          });
-        },
-        error: (error) => {
-          console.error('AuthService - Error loading profile on init:', error);
-          // Fall back to cached user data
-          this.updateAuthState({
-            user,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null
-          });
-        }
+      // Use cached user data
+      console.log('AuthService - Using cached user data:', user);
+      this.updateAuthState({
+        user,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null
       });
     }
   }
@@ -99,7 +65,7 @@ export class AuthService {
 
     // Use API to validate credentials
     return this.http.post<any>(`${environment.apiUrl}/api/v1/authentication/sign-in`, { email: username, password }).pipe(
-      switchMap(response => {
+      map(response => {
         console.log('AuthService - Full API response:', JSON.stringify(response, null, 2));
 
         // Extract token - could be 'token', 'accessToken', or 'access_token'
@@ -118,46 +84,46 @@ export class AuthService {
         // Save tokens first
         this.tokenService.saveTokens(tokens);
 
-        // Now get the full profile with firstName and lastName
-        return this.http.get<any>(`${environment.apiUrl}/api/v1/profiles/me`, {
-          headers: new HttpHeaders().set('Authorization', `Bearer ${token}`)
-        }).pipe(
-          map(profileData => {
-            console.log('AuthService - Profile data from API:', profileData);
+        // Extract user data from response.user object
+        const userFromResponse = response.user;
+        console.log('AuthService - User object from response:', userFromResponse);
 
-            const user = new User(
-              (profileData.id ?? 0).toString(),
-              profileData.email,
-              profileData.firstName,
-              profileData.lastName,
-              'USER',
-              true,
-              new Date(),
-              new Date(),
-              undefined,
-              profileData.phone,
-              profileData.address,
-              profileData.profilePhotoUrl
-            );
+        if (!userFromResponse) {
+          throw new Error('No user data received from server');
+        }
 
-            console.log('AuthService - Created user object with profile:', user);
-
-            // Save user with complete profile data
-            this.tokenService.saveUser(user);
-
-            // Update auth state
-            this.updateAuthState({
-              user,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null
-            });
-
-            console.log('AuthService - Auth state updated with user:', user);
-
-            return { user, tokens };
-          })
+        // Create user from response.user
+        const user = new User(
+          (userFromResponse.id ?? 0).toString(),
+          userFromResponse.email || username,
+          userFromResponse.name || 'User',
+          userFromResponse.lastName || '',
+          'USER',
+          true,
+          new Date(),
+          new Date(),
+          undefined,
+          userFromResponse.phone,
+          userFromResponse.address,
+          userFromResponse.profilePhotoUrl
         );
+
+        console.log('AuthService - Created user object:', user);
+
+        // Save user
+        this.tokenService.saveUser(user);
+
+        // Update auth state
+        this.updateAuthState({
+          user,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null
+        });
+
+        console.log('AuthService - Auth state updated with user:', user);
+
+        return { user, tokens };
       }),
       catchError(error => {
         console.error('AuthService - Login error:', error);
@@ -275,8 +241,26 @@ export class AuthService {
       error: null
     });
 
-    // Register user via API
-    return this.http.post<any>(`${environment.apiUrl}/api/v1/authentication/sign-up`, command).pipe(
+    // Transform to match backend expected format
+    const requestBody = {
+      email: command.email,
+      password: command.password,
+      name: command.firstName,
+      lastName: command.lastName,
+      phone: command.phoneNumber.replace(/\s+/g, ''), // Remove all spaces from phone
+      address: command.address
+    };
+
+    // Log the request payload
+    console.log('AuthService - Register payload:', JSON.stringify(requestBody, null, 2));
+    console.log('AuthService - Register URL:', `${environment.apiUrl}/api/v1/authentication/sign-up`);
+
+    // Register user via API with text response type to capture error details
+    return this.http.post<any>(`${environment.apiUrl}/api/v1/authentication/sign-up`, requestBody, {
+      observe: 'response',
+      responseType: 'json' as 'json'
+    }).pipe(
+      map(response => response.body),
       switchMap(response => {
         console.log('AuthService - User registered successfully:', response);
 
@@ -285,7 +269,25 @@ export class AuthService {
       }),
       catchError(error => {
         console.error('AuthService - Register error:', error);
-        const errorMessage = this.getErrorMessage(error);
+        console.error('AuthService - Register error status:', error.status);
+        console.error('AuthService - Register error body:', error.error);
+        console.error('AuthService - Register error message:', error.message);
+        
+        // Try to extract meaningful error message
+        let errorMessage = 'Error en el registro. Por favor verifica que el email no esté ya registrado.';
+        if (error.error) {
+          if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.error.message) {
+            errorMessage = error.error.message;
+          } else if (error.error.error) {
+            errorMessage = error.error.error;
+          } else if (error.error.details) {
+            errorMessage = error.error.details;
+          }
+        }
+        
+        console.error('AuthService - Extracted error message:', errorMessage);
 
         this.updateAuthState({
           ...this.authStateSubject.value,
@@ -293,7 +295,7 @@ export class AuthService {
           error: errorMessage
         });
 
-        return throwError(() => error);
+        return throwError(() => new Error(errorMessage));
       })
     );
   }
@@ -378,6 +380,18 @@ export class AuthService {
 
   private updateAuthState(state: AuthState): void {
     this.authStateSubject.next(state);
+  }
+
+  // Public method to update user data (e.g., when profile is updated)
+  public updateCurrentUser(user: User): void {
+    this.tokenService.saveUser(user);
+    this.updateAuthState({
+      user,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null
+    });
+    console.log('AuthService - User updated and state notified');
   }
 
   private clearAuthState(): void {
