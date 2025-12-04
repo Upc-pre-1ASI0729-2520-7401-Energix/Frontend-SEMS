@@ -282,6 +282,7 @@
     "profile": "Profile",
     "devices": "Devices",
     "reports": "Reports",
+    "payments": "Payments",
     "settings": "Settings",
     "logout": "Log out"
   },
@@ -368,5 +369,22 @@
       "warning": "Warning",
       "info": "Information"
     }
+  },
+  "payments": {
+    "title": "Payments",
+    "estimatedBill": "Estimated monthly bill",
+    "amount": "Amount",
+    "currency": "Currency",
+    "generateLink": "Generate Payment Link",
+    "generating": "Generating...",
+    "readyToPay": "Payment link ready!",
+    "continueToPayment": "Continue to Payment",
+    "enterCardDetails": "Enter Card Details",
+    "amountToPay": "Amount to pay",
+    "loadingPaymentForm": "Loading payment form...",
+    "cancel": "Cancel",
+    "payNow": "Pay Now",
+    "processing": "Processing...",
+    "securedByStripe": "Secured by Stripe"
   }
 }

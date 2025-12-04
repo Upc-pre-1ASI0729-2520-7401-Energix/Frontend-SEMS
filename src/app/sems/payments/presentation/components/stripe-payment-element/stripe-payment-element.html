@@ -1,0 +1,50 @@
+<div class="stripe-payment-container">
+  <div class="payment-header">
+    <h3>{{ 'payments.enterCardDetails' | translate }}</h3>
+    <p class="amount-display">{{ 'payments.amountToPay' | translate }}: {{ getFormattedAmount() }}</p>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>{{ 'payments.loadingPaymentForm' | translate }}</p>
+    </div>
+  }
+
+  <div #paymentElement class="payment-element" [class.hidden]="isLoading"></div>
+
+  @if (errorMessage) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="button-group" [class.hidden]="isLoading">
+    <button
+      type="button"
+      class="btn btn-cancel"
+      (click)="onCancel()"
+      [disabled]="isProcessing"
+    >
+      {{ 'payments.cancel' | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-pay"
+      (click)="submitPayment()"
+      [disabled]="isProcessing || isLoading"
+    >
+      @if (isProcessing) {
+        <span class="spinner-small"></span>
+        {{ 'payments.processing' | translate }}
+      } @else {
+        {{ 'payments.payNow' | translate }}
+      }
+    </button>
+  </div>
+
+  <div class="stripe-badge">
+    <span>🔒 {{ 'payments.securedByStripe' | translate }}</span>
+  </div>
+</div>

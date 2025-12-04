@@ -282,6 +282,7 @@
     "profile": "Perfil",
     "devices": "Dispositivos",
     "reports": "Reportes",
+    "payments": "Pagos",
     "settings": "Configuración",
     "logout": "Cerrar Sesión"
   },
@@ -368,5 +369,22 @@
       "warning": "Advertencia",
       "info": "Información"
     }
+  },
+  "payments": {
+    "title": "Pagos",
+    "estimatedBill": "Factura estimada del mes",
+    "amount": "Monto",
+    "currency": "Moneda",
+    "generateLink": "Generar Link de Pago",
+    "generating": "Generando...",
+    "readyToPay": "¡Link de pago listo!",
+    "continueToPayment": "Continuar al Pago",
+    "enterCardDetails": "Ingrese los Datos de la Tarjeta",
+    "amountToPay": "Monto a pagar",
+    "loadingPaymentForm": "Cargando formulario de pago...",
+    "cancel": "Cancelar",
+    "payNow": "Pagar Ahora",
+    "processing": "Procesando...",
+    "securedByStripe": "Protegido por Stripe"
   }
 }

@@ -1,0 +1,93 @@
+<div class="payment-form-container">
+  <div class="form-header">
+    <h2>{{ 'payments.title' | translate }}</h2>
+    @if (estimatedBill > 0) {
+      <p class="estimated-bill">
+        💡 {{ 'payments.estimatedBill' | translate }}: {{ getFormattedAmount() }}
+      </p>
+    }
+  </div>
+
+  @if (!showStripeForm) {
+    <div class="payment-setup">
+      @if (successMessage) {
+        <div class="alert alert-success">
+          ✅ {{ successMessage }}
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          ⚠️ {{ errorMessage }}
+        </div>
+      }
+
+      <div class="form-group">
+        <label for="amount">{{ 'payments.amount' | translate }}</label>
+        <input
+          type="number"
+          id="amount"
+          [(ngModel)]="amount"
+          min="0.01"
+          step="0.01"
+          class="form-input"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="currency">{{ 'payments.currency' | translate }}</label>
+        <select
+          id="currency"
+          [(ngModel)]="currency"
+          class="form-select"
+          [disabled]="isLoading"
+        >
+          @for (curr of currencies; track curr.value) {
+            <option [value]="curr.value">{{ curr.label }}</option>
+          }
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="generatePaymentIntent()"
+        [disabled]="isLoading || amount <= 0"
+      >
+        @if (isLoading) {
+          <span class="spinner"></span>
+          {{ 'payments.generating' | translate }}
+        } @else {
+          {{ 'payments.generateLink' | translate }}
+        }
+      </button>
+
+      @if (paymentIntentData) {
+        <div class="payment-ready">
+          <p class="ready-message">{{ 'payments.readyToPay' | translate }}</p>
+          <button
+            type="button"
+            class="btn btn-success"
+            (click)="proceedToPayment()"
+          >
+            {{ 'payments.continueToPayment' | translate }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (paymentIntentData && showStripeForm) {
+    <div class="stripe-form-container">
+      <app-stripe-payment-element
+        [clientSecret]="paymentIntentData.clientSecret"
+        [amount]="paymentIntentData.amount"
+        [currency]="paymentIntentData.currency"
+        (paymentSuccess)="onPaymentSuccess($event)"
+        (paymentError)="onPaymentError($event)"
+        (cancel)="onPaymentCancel()"
+      ></app-stripe-payment-element>
+    </div>
+  }
+</div>
