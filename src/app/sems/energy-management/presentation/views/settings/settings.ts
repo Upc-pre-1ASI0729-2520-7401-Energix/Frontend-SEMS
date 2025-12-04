@@ -1,5 +1,5 @@
 // src/app/sems/energy-management/presentation/views/settings/settings.ts
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -45,7 +45,8 @@ export class Settings implements OnInit, OnDestroy {
     private settingsStore: SettingsStore,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     console.log('Settings component constructed');
   }
@@ -93,15 +94,6 @@ export class Settings implements OnInit, OnDestroy {
   loadSettings(): void {
     if (!this.currentUserId) return;
 
-    // Check if store already has settings for this user to preserve optimistic updates
-    const cachedSettings = this.settingsStore.currentSettings;
-    if (cachedSettings && cachedSettings.userId.toString() === this.currentUserId) {
-      console.log('Using cached settings from store for user:', this.currentUserId);
-      // Force change detection to ensure UI reflects store state immediately
-      this.cdr.detectChanges();
-      return;
-    }
-
     console.log('Loading settings for user:', this.currentUserId);
 
     this.settingsService.loadUserSettings(this.currentUserId)
@@ -111,6 +103,7 @@ export class Settings implements OnInit, OnDestroy {
           console.log('Settings loaded:', settings);
           if (settings.savingRules) {
             this.rules = settings.savingRules;
+            console.log('Rules updated:', this.rules);
           }
           this.cdr.detectChanges(); // Force change detection
         },
@@ -152,18 +145,75 @@ export class Settings implements OnInit, OnDestroy {
     if (!name) return;
 
     const newRule: Partial<SavingRule> = {
-      name: name,
+      name: name.trim(),
       isEnabled: true
     };
+
+    console.log('Sending rule to backend:', JSON.stringify(newRule, null, 2));
 
     this.settingsService.createRule(newRule)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (rule) => {
-          console.log('Rule added:', rule);
-          // Reload settings to ensure we have the correct data format from backend
-          this.loadSettings();
-          this.showSuccess('Rule added successfully');
+          console.log('Raw response from backend:', JSON.stringify(rule, null, 2));
+          console.log('Rule added from backend:', rule);
+          console.log('Rule properties:', {
+            id: rule.id,
+            name: rule.name,
+            nameLength: rule.name ? rule.name.length : 'null/undefined',
+            nameType: typeof rule.name,
+            isEnabled: rule.isEnabled
+          });
+          console.log('Current rules before update:', this.rules);
+          
+          // Validar que la regla tenga los campos necesarios
+          if (!rule.name || rule.name.trim() === '') {
+            console.error('Rule has empty name:', rule);
+            console.error('Original name sent:', name);
+            
+            // Usar el nombre original que enviamos si el backend no lo devuelve
+            rule.name = name.trim();
+            console.log('Using original name:', rule.name);
+          }
+          
+          // Usar NgZone para asegurar que Angular detecte el cambio
+          this.ngZone.run(() => {
+            // Asegurar que la regla tenga el formato correcto
+            const newRule: SavingRule = {
+              id: rule.id,
+              name: rule.name || name.trim(), // Usar el nombre original si el backend no lo devuelve
+              isEnabled: rule.isEnabled !== undefined ? rule.isEnabled : true
+            };
+            
+            console.log('Final rule to add:', newRule);
+            
+            // Actualizar el array de reglas
+            this.rules = [...this.rules, newRule];
+            console.log('Rules after update:', this.rules);
+            console.log('Number of rules:', this.rules.length);
+            
+            // Actualizar también las settings actuales
+            if (this.currentSettings) {
+              this.currentSettings = {
+                ...this.currentSettings,
+                savingRules: this.rules
+              };
+              this.editableSettings = JSON.parse(JSON.stringify(this.currentSettings));
+            }
+            
+            // Forzar detección de cambios
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+            
+            // Log final para verificar
+            setTimeout(() => {
+              console.log('Final check - rules in component:', this.rules);
+              // Como backup, recargar completamente los settings
+              this.loadSettings();
+            }, 100);
+            
+            this.showSuccess('Rule added successfully');
+          });
         },
         error: (err) => {
           console.error('Failed to add rule:', err);
@@ -340,5 +390,24 @@ export class Settings implements OnInit, OnDestroy {
       horizontalPosition: 'end',
       verticalPosition: 'top'
     });
+  }
+
+  // TrackBy function para ayudar a Angular a detectar cambios en las reglas
+  trackByRuleId(index: number, rule: SavingRule): number {
+    return rule.id;
+  }
+
+  // Método para debug - forza actualización completa
+  forceUpdate(): void {
+    console.log('Forcing complete update...');
+    this.ngZone.run(() => {
+      this.cdr.detectChanges();
+      this.cdr.markForCheck();
+    });
+  }
+
+  // Getter para debug
+  get debugRulesInfo(): string {
+    return `Rules count: ${this.rules.length}, Rules: ${JSON.stringify(this.rules.map(r => ({ id: r.id, name: r.name })))}`;
   }
 }

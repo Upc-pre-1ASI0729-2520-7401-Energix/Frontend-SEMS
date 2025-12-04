@@ -10,7 +10,7 @@
           <button mat-mini-fab color="primary" class="add-btn" (click)="onAddNewRule()">+</button>
         </div>
         <div class="toggles">
-          <div *ngFor="let rule of rules" class="rule-item">
+          <div *ngFor="let rule of rules; trackBy: trackByRuleId" class="rule-item">
             <mat-checkbox [checked]="rule.isEnabled" (change)="onToggleRule(rule)">
               {{ rule.name }}
             </mat-checkbox>

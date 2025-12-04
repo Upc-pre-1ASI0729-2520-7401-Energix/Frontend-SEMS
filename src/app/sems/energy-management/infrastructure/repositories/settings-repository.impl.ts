@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { SettingsRepository } from '../../domain/model/repositories/settings.repository';
 import { SettingsResponse } from '../response/settings.response';
 import { SettingsRequest } from '../request/settings.request';
@@ -49,9 +50,16 @@ export class SettingsRepositoryImpl implements SettingsRepository {
   // Rules Management
   createRule(rule: Partial<SavingRule>): Observable<SavingRule> {
     // POST /api/v1/settings/rules
+    console.log('SettingsRepository - Creating rule:', JSON.stringify(rule, null, 2));
+    console.log('SettingsRepository - URL:', `${BASE_URL}/rules`);
+    
     return this.http.post<SavingRule>(`${BASE_URL}/rules`, rule, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      tap(response => {
+        console.log('SettingsRepository - Rule creation response:', JSON.stringify(response, null, 2));
+      })
+    );
   }
 
   updateRule(ruleId: string, rule: Partial<SavingRule>): Observable<SavingRule> {
