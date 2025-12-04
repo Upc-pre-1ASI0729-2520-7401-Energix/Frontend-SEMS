@@ -227,6 +227,7 @@
     "weeklyChart": {
       "title": "Weekly Consumption Trend",
       "weeklyAverage": "Weekly Average",
+      "weeklyAverageMessage": "Average weekly consumption",
       "comparison": "Your consumption this week is 5% lower than the last week.",
       "encouragement": "Keep up the great work!",
       "noData": "No consumption data available",
@@ -247,6 +248,10 @@
       "devices": {
         "airConditioning": "Air Conditioning",
         "refrigerator": "Refrigerator",
+        "tv": "TV",
+        "laptop": "Laptop",
+        "smartSpeaker": "Smart Speaker",
+        "microwave": "Microwave",
         "desktopPC": "Desktop PC"
       }
     },

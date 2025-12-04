@@ -227,6 +227,7 @@
     "weeklyChart": {
       "title": "Tendencia de Consumo Semanal",
       "weeklyAverage": "Promedio Semanal",
+      "weeklyAverageMessage": "Promedio de consumo semanal",
       "comparison": "Tu consumo esta semana es 5% menor que la semana pasada.",
       "encouragement": "¡Sigue así!",
       "noData": "No hay datos de consumo disponibles",
@@ -247,6 +248,10 @@
       "devices": {
         "airConditioning": "Aire Acondicionado",
         "refrigerator": "Refrigerador",
+        "tv": "Televisor",
+        "laptop": "Portátil",
+        "smartSpeaker": "Altavoz Inteligente",
+        "microwave": "Microondas",
         "desktopPC": "PC de Escritorio"
       }
     },
